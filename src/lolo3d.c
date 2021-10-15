@@ -1,27 +1,39 @@
-#include <SDL.h>
+#include <SDL2/SDL.h>
+#include <GL/glew.h>
+#include <stdio.h>
 
 #include "types.h"
 #include "globals.h"
+#include "shader_loader.h"
+#include "obj_loader.h"
+#include "render.h"
 
-static SDL_Window* window;
-static SDL_Renderer* renderer;
-
-void init()
+int main(int argc, char* argv[])
 {
-    SDL_Init(SDL_INIT_EVERYTHING);
-    SDL_CreateWindowAndRenderer(windowWidth, windowHeight, SDL_WINDOW_OPENGL, &window, &renderer);
-}
+    SDL_Init(SDL_INIT_VIDEO);
+    SDL_Window* window = SDL_CreateWindow("Lolo 3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_OPENGL);
+    SDL_GLContext glContext = SDL_GL_CreateContext(window);
 
-void quit()
-{
-    SDL_DestroyRenderer(renderer);
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-}
+    glewInit();
+    if (!installShaders()) {
+        fprintf(stderr, "Error loading shaders.");
+        return 1;
+    }
+    glEnable(GL_DEPTH_TEST);
+    glViewport(0, 0, windowWidth, windowHeight);
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-int main()
-{
-    init();
+    Model *model = loadObj("assets/cube.obj");
+    if (!model) {
+        fprintf(stderr, "Error loading obj.");
+        return 1;
+    }
+
+    glGenBuffers(1, &model->vboId);
+    glBindBuffer(GL_ARRAY_BUFFER, model->vboId);
+    glBufferData(GL_ARRAY_BUFFER, model->numVertices * 4, model->vertices, GL_STATIC_DRAW);
+    free(model->vertices);
+
     int run = 1;
     while (run) {
         int ticks = SDL_GetTicks();
@@ -29,21 +41,35 @@ int main()
         // input
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
-            if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_q) {
-                run = 0;
+            if (event.type == SDL_KEYDOWN) {
+                SDL_Keycode sym = event.key.keysym.sym;
+                if (sym == SDLK_w) {
+                    GLint polyMode[2];
+                    glGetIntegerv(GL_POLYGON_MODE, polyMode);
+                    glPolygonMode(GL_FRONT_AND_BACK, polyMode[0] == GL_FILL ? GL_LINE : GL_FILL);
+                }
+                if (sym == SDLK_q) {
+                    run = 0;
+                }
             }
         }
 
-        // update
+        render(model);
+        SDL_GL_SwapWindow(window);
 
-        // render
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderClear(renderer);
-        SDL_RenderPresent(renderer);
-
+        // wait
         int fps = 30;
-        SDL_Delay(ticks + 1000 / fps - SDL_GetTicks());
+        int delay = 1000 / fps - (SDL_GetTicks() - ticks);
+        if (delay > 0) SDL_Delay(delay);
     }
 
-    quit();
+    free(model->faceFirst);
+    free(model->faceCount);
+    glDeleteBuffers(1, &model->vboId);
+
+    SDL_GL_DeleteContext(glContext);
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
+    return 0;
 }
