@@ -1,9 +1,10 @@
 #include "render.h"
 
+#include <SDL2/SDL.h>
 #include "globals.h"
 
 void render(Model *model) {
-    glClearColor(0.0f, 0.44f, 0.63f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnableVertexAttribArray(ATTRIB_POSITION);
@@ -16,7 +17,7 @@ void render(Model *model) {
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 6));
 
     vec3 pos = { 0.0f, 0.0f, 0.0f };
-    float angle = SDL_GetTicks() * 0.001f;
+    float angle = SDL_GetTicks() * 0.0005f;
     vec3 axis = { 0.0f, 1.0f, 0.0f };
     glm_mat4_identity(modelMat);
     glm_translate(modelMat, pos);

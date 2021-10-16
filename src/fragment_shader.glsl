@@ -1,4 +1,10 @@
+varying vec3 vNormal;
+varying vec3 vLightDirection;
+
 void main()
 {
-    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
+    vec4 color = vec4(0.0, 1.0, 0.0, 1.0);
+    float intensity = max(0.1, dot(vNormal, vLightDirection)) * 0.5;
+
+    gl_FragColor = color * intensity;
 }
