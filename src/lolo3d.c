@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, windowWidth, windowHeight);
 
-    Model *model = loadObj("assets/monkey.obj");
+    Model *model = loadObj("assets/skull.obj");
     if (!model) {
         fprintf(stderr, "Error loading obj.\n");
         return 1;
@@ -33,8 +33,8 @@ int main(int argc, char* argv[])
     glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * model->numVertices, model->vertices, GL_STATIC_DRAW);
     free(model->vertices);
 
-    glm_perspective(80.0f, (float) windowWidth / windowHeight, 0.1f, 100.0f, projMat);
-    vec3 eye = { 2.0f, 1.0f, 0.0f };
+    glm_perspective(30.0f, (float) windowWidth / windowHeight, 0.1f, 100.0f, projMat);
+    vec3 eye = { 3.0f, 0.0f, 0.0f };
     vec3 center = { 0.0f, 0.0f, 0.0f };
     vec3 up = { 0.0f, -1.0f, 0.0f };
     glm_lookat(eye, center, up, viewMat);

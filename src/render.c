@@ -16,7 +16,7 @@ void render(Model *model) {
     glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 3));
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 6));
 
-    vec3 pos = { 0.0f, 0.0f, 0.0f };
+    vec3 pos = { 0.0f, -1.0f, 0.0f };
     float angle = SDL_GetTicks() * 0.0005f;
     vec3 axis = { 0.0f, 1.0f, 0.0f };
     glm_mat4_identity(modelMat);
