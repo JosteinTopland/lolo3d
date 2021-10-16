@@ -6,7 +6,8 @@
 
 Model *loadObj(const char *filename) {
     FILE* file;
-    fopen_s(&file, filename, "rb");
+    //fopen_s(&file, filename, "rb");
+    file = fopen(filename, "rb");
     if (!file) return 0;
 
     const int line_size = 300;

@@ -1,12 +1,12 @@
-#version 330
+attribute vec3 aPosition;
+attribute vec3 aNormal;
+attribute vec2 aTexcoord;
 
-layout (location = 0) in vec3 position;
-layout (location = 1) in vec3 normal;
-layout (location = 2) in vec2 texCoord;
+uniform mat4 modelMat;
+uniform mat4 viewMat;
+uniform mat4 projMat;
 
 void main()
 {
-    mat4 transform;
-
-    gl_Position = transform * vec4(position, 1.0);
+    gl_Position = projMat * viewMat * modelMat * vec4(aPosition, 1.0);
 }
