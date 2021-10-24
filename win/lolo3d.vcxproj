@@ -10,6 +10,28 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\src\fragment_shader.glsl" />
+    <None Include="..\src\vertex_shader.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\globals.c" />
+    <ClCompile Include="..\src\input.c" />
+    <ClCompile Include="..\src\level.c" />
+    <ClCompile Include="..\src\lolo3d.c" />
+    <ClCompile Include="..\src\obj_loader.c" />
+    <ClCompile Include="..\src\render.c" />
+    <ClCompile Include="..\src\shader_loader.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\globals.h" />
+    <ClInclude Include="..\src\input.h" />
+    <ClInclude Include="..\src\level.h" />
+    <ClInclude Include="..\src\obj_loader.h" />
+    <ClInclude Include="..\src\render.h" />
+    <ClInclude Include="..\src\shader_loader.h" />
+    <ClInclude Include="..\src\types.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -56,6 +78,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\jostein\Libraries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996;4005;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -73,6 +96,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Users\jostein\Libraries\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4996;4005;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -83,24 +107,6 @@
       <AdditionalDependencies>SDL2main.lib;SDL2.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="src\globals.c" />
-    <ClCompile Include="src\obj_loader.c" />
-    <ClCompile Include="src\shader_loader.c" />
-    <ClCompile Include="src\lolo3d.c" />
-    <ClCompile Include="src\render.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="src\globals.h" />
-    <ClInclude Include="src\obj_loader.h" />
-    <ClInclude Include="src\shader_loader.h" />
-    <ClInclude Include="src\render.h" />
-    <ClInclude Include="src\types.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src\fragment_shader.glsl" />
-    <None Include="src\vertex_shader.glsl" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

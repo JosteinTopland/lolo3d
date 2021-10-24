@@ -4,10 +4,38 @@
 #include <stdlib.h>
 #include <string.h>
 
+void loadMTL(const char* filename) {
+    FILE* file;
+#ifdef _WIN32
+    fopen_s(&file, filename, "rb");
+#else
+    file = fopen(filename, "rb");
+#endif
+    if (!file) return;
+
+    const int line_size = 300;
+    char* line = malloc(line_size);
+    if (!line) return;
+
+    fseek(file, 0, SEEK_SET);
+    while (fgets(line, line_size, file)) {
+        if (strstr(line, "map_Kd ")) {
+            char* p = strchr(line, ' ') + 1;
+            printf("%s", p);
+        }
+    }
+
+    free(line);
+    fclose(file);
+}
+
 Model *loadObj(const char *filename) {
     FILE* file;
-    //fopen_s(&file, filename, "rb");
+#ifdef _WIN32
+    fopen_s(&file, filename, "rb");
+#else
     file = fopen(filename, "rb");
+#endif
     if (!file) return 0;
 
     const int line_size = 300;
@@ -46,6 +74,10 @@ Model *loadObj(const char *filename) {
     GLint faceFirst = 0;
     fseek(file, 0, SEEK_SET);
     while (fgets(line, line_size, file)) {
+        if (strstr(line, "mtllib ")) {
+            char* p = strchr(line, ' ') + 1;
+            loadMTL("assets/cube.mtl");
+        }
         if (strstr(line, "v ")) {
             char *p = strchr(line, ' ');
             GLfloat x = strtof(p, &p);
