@@ -2,8 +2,8 @@ CC=gcc
 CFLAGS=`sdl2-config --cflags` -Wall
 LDFLAGS=`sdl2-config --libs` -lSDL2_mixer -lGL -lGLEW -lm
 
-lolo3d: lolo3d.o globals.o obj_loader.o render.o shader_loader.o
-	$(CC) -o lolo3d lolo3d.o globals.o obj_loader.o render.o shader_loader.o $(LDFLAGS)
+lolo3d: lolo3d.o globals.o obj_loader.o render.o shader_loader.o level.o input.o
+	$(CC) -o lolo3d lolo3d.o globals.o obj_loader.o render.o shader_loader.o level.o input.o $(LDFLAGS)
 
 lolo3d.o : src/lolo3d.c
 	$(CC) -c $(CFLAGS) src/lolo3d.c
@@ -19,6 +19,12 @@ render.o : src/render.c
 
 shader_loader.o : src/shader_loader.c
 	$(CC) -c $(CFLAGS) src/shader_loader.c
+
+level.o : src/level.c
+	$(CC) -c $(CFLAGS) src/level.c
+
+input.o : src/input.c
+	$(CC) -c $(CFLAGS) src/input.c
 
 clean:
 	rm -f *.o lolo3d

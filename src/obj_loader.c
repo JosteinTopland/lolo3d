@@ -1,5 +1,6 @@
 #include "obj_loader.h"
 
+#include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,11 +18,25 @@ void loadMTL(const char* filename) {
     char* line = malloc(line_size);
     if (!line) return;
 
-    fseek(file, 0, SEEK_SET);
     while (fgets(line, line_size, file)) {
         if (strstr(line, "map_Kd ")) {
             char* p = strchr(line, ' ') + 1;
-            printf("%s", p);
+            char path[100] = "assets/";
+            strcat(path, p);
+            *(path + strlen(path) - 1) = '\0';
+
+            GLuint textureId;
+            glGenTextures(1, &textureId);
+            glBindTexture(GL_TEXTURE_2D, textureId);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            SDL_Surface* image = SDL_LoadBMP(path);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+            SDL_FreeSurface(image);
+
+            printf("%d=%s\n", textureId, path);
+            // TODO store the filename + textureid
         }
     }
 
@@ -46,7 +61,6 @@ Model *loadObj(const char *filename) {
     int numNormals = 0;
     int numTexCoords = 0;
     int numFaces = 0;
-    fseek(file, 0, SEEK_SET);
     while (fgets(line, line_size, file)) {
         if (strstr(line, "v ")) numVertices++;
         if (strstr(line, "vn ")) numNormals++;
@@ -70,19 +84,22 @@ Model *loadObj(const char *filename) {
     Vertex* pmv = model->vertices;
     GLint* pmff = model->faceFirst;
     GLsizei* pmfc = model->faceCount;
-
     GLint faceFirst = 0;
+
     fseek(file, 0, SEEK_SET);
     while (fgets(line, line_size, file)) {
         if (strstr(line, "mtllib ")) {
             char* p = strchr(line, ' ') + 1;
-            loadMTL("assets/cube.mtl");
+            char path[100] = "assets/";
+            strcat(path, p);
+            *(path + strlen(path) - 1) = '\0';
+            loadMTL(path);
         }
         if (strstr(line, "v ")) {
             char *p = strchr(line, ' ');
             GLfloat x = strtof(p, &p);
             GLfloat y = strtof(p, &p);
-            GLfloat z = strtof(p, NULL);
+            GLfloat z = strtof(p, &p);
             *pv++ = x;
             *pv++ = y;
             *pv++ = z;
@@ -90,7 +107,7 @@ Model *loadObj(const char *filename) {
         if (strstr(line, "vt ")) {
             char* p = strchr(line, ' ');
             GLfloat u = strtof(p, &p);
-            GLfloat v = strtof(p, NULL);
+            GLfloat v = strtof(p, &p);
             *ptc++ = u;
             *ptc++ = v;
         }
@@ -98,53 +115,27 @@ Model *loadObj(const char *filename) {
             char* p = strchr(line, ' ');
             GLfloat x = strtof(p, &p);
             GLfloat y = strtof(p, &p);
-            GLfloat z = strtof(p, NULL);
+            GLfloat z = strtof(p, &p);
             *pn++ = x;
             *pn++ = y;
             *pn++ = z;
         }
         if (strstr(line, "f ")) {
-            char* p = strchr(line, ' ') + 1;
-            GLsizei vIdx1 = strtol(p, &p, 10);
-            GLsizei tIdx1 = strtol(p + 1, &p, 10);
-            GLsizei nIdx1 = strtol(p + 1, &p, 10);
-            GLsizei vIdx2 = strtol(p + 1, &p, 10);
-            GLsizei tIdx2 = strtol(p + 1, &p, 10);
-            GLsizei nIdx2 = strtol(p + 1, &p, 10);
-            GLsizei vIdx3 = strtol(p + 1, &p, 10);
-            GLsizei tIdx3 = strtol(p + 1, &p, 10);
-            GLsizei nIdx3 = strtol(p + 1, NULL, 10);
-            
-            pmv->position[0] = vertices[3 * (vIdx1 - 1)];
-            pmv->position[1] = vertices[3 * (vIdx1 - 1) + 1];
-            pmv->position[2] = vertices[3 * (vIdx1 - 1) + 2];
-            pmv->textureCoord[0] = texCoords[2 * (tIdx1 - 1)];
-            pmv->textureCoord[1] = texCoords[2 * (tIdx1 - 1) + 1];
-            pmv->normal[0] = normals[3 * (nIdx1 - 1)];
-            pmv->normal[1] = normals[3 * (nIdx1 - 1) + 1];
-            pmv->normal[2] = normals[3 * (nIdx1 - 1) + 2];
-            pmv++;
-
-            pmv->position[0] = vertices[3 * (vIdx2 - 1)];
-            pmv->position[1] = vertices[3 * (vIdx2 - 1) + 1];
-            pmv->position[2] = vertices[3 * (vIdx2 - 1) + 2];
-            pmv->textureCoord[0] = texCoords[2 * (tIdx2 - 1)];
-            pmv->textureCoord[1] = texCoords[2 * (tIdx2 - 1) + 1];
-            pmv->normal[0] = normals[3 * (nIdx2 - 1)];
-            pmv->normal[1] = normals[3 * (nIdx2 - 1) + 1];
-            pmv->normal[2] = normals[3 * (nIdx2 - 1) + 2];
-            pmv++;
-
-            pmv->position[0] = vertices[3 * (vIdx3 - 1)];
-            pmv->position[1] = vertices[3 * (vIdx3 - 1) + 1];
-            pmv->position[2] = vertices[3 * (vIdx3 - 1) + 2];
-            pmv->textureCoord[0] = texCoords[2 * (tIdx3 - 1)];
-            pmv->textureCoord[1] = texCoords[2 * (tIdx3 - 1) + 1];
-            pmv->normal[0] = normals[3 * (nIdx3 - 1)];
-            pmv->normal[1] = normals[3 * (nIdx3 - 1) + 1];
-            pmv->normal[2] = normals[3 * (nIdx3 - 1) + 2];
-            pmv++;
-
+            char* p = strchr(line, ' ');
+            for (int i = 0; i < 3; i++) {
+                GLsizei vIdx = 3 * (strtol(p + 1, &p, 10) - 1);
+                GLsizei tIdx = 2 * (strtol(p + 1, &p, 10) - 1);
+                GLsizei nIdx = 3 * (strtol(p + 1, &p, 10) - 1);
+                pmv->position[0] = vertices[vIdx];
+                pmv->position[1] = vertices[vIdx + 1];
+                pmv->position[2] = vertices[vIdx + 2];
+                pmv->textureCoord[0] = texCoords[tIdx];
+                pmv->textureCoord[1] = 1 - texCoords[tIdx + 1];
+                pmv->normal[0] = normals[nIdx];
+                pmv->normal[1] = normals[nIdx + 1];
+                pmv->normal[2] = normals[nIdx + 2];
+                pmv++;
+            }
             *pmff++ = faceFirst;
             *pmfc++ = 3;
             faceFirst += 3;

@@ -16,6 +16,8 @@ extern GLfloat cameraY;
 extern GLuint modelMatId;
 extern GLuint viewMatId;
 extern GLuint projMatId;
+extern GLuint enableTexture;
+
 extern mat4 modelMat;
 extern mat4 viewMat;
 extern mat4 projMat;

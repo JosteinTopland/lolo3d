@@ -81,6 +81,7 @@ int installShaders() {
     modelMatId = glGetUniformLocation(programId, "modelMat");
     viewMatId = glGetUniformLocation(programId, "viewMat");
     projMatId = glGetUniformLocation(programId, "projMat");
+    enableTexture = glGetUniformLocation(programId, "uEnableTexture");
 
     return 1;
 }

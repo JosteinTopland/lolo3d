@@ -6,6 +6,14 @@
 #include "globals.h"
 
 void input() {
+    float angle = SDL_GetTicks() * 0.001f;
+    vec3 pos = { 0.0f, 0.0f, 0.0f };
+    vec3 axis = { 0.0f, 1.0f, 0.0f };
+    glm_mat4_identity(modelMat);
+    glm_translate(modelMat, pos);
+    glm_rotate(modelMat, angle, axis);
+    glUniformMatrix4fv(modelMatId, 1, GL_FALSE, &modelMat[0][0]);
+
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_KEYDOWN) {
@@ -22,6 +30,9 @@ void input() {
             if (sym == SDLK_q) {
                 run = 0;
             }
+        }
+        if (event.type == SDL_WINDOWEVENT && event.window.event == SDL_WINDOWEVENT_CLOSE) {
+            run = 0;
         }
     }
 }

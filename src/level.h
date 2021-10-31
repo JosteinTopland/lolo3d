@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-static void loadLevel();
+void loadLevel();
 void mainloop();
 
 static Model* model;

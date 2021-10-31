@@ -7,10 +7,13 @@ uniform mat4 viewMat;
 uniform mat4 projMat;
 
 varying vec3 vNormal;
+varying vec2 vTexcoord;
 varying vec3 vLightDirection;
 
 void main()
 {
+    vTexcoord = aTexcoord;
+
     mat3 normalMatrix;
     normalMatrix[0] = normalize((viewMat * modelMat)[0].xyz);
     normalMatrix[1] = normalize((viewMat * modelMat)[1].xyz);
