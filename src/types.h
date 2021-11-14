@@ -8,6 +8,12 @@ enum {
     ATTRIB_NORMAL,
     ATTRIB_TEXCOORD
 };
+typedef struct {
+    float ambient[4];
+    float diffuse[4];
+    float specular[4];
+    char texture[50];
+} Material;
 
 typedef struct {
     GLfloat position[3];
@@ -17,11 +23,13 @@ typedef struct {
 
 typedef struct {
     GLuint vboId;
+    int numObjects;
     GLsizeiptr numVertices;
     GLsizei numFaces;
     Vertex* vertices;
     GLint* faceFirst;
     GLsizei* faceCount;
+    Material material;
 } Model;
 
 #endif

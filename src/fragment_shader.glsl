@@ -1,5 +1,6 @@
 uniform sampler2D uSampler;
 uniform bool uEnableTexture;
+uniform vec4 uDiffuseColor;
 
 varying vec3 vNormal;
 varying vec2 vTexcoord;
@@ -13,7 +14,7 @@ void main()
     if (uEnableTexture) {
         color = texture2D(uSampler, vTexcoord);
     } else {
-        color = vec4(0.2, 1.0, 0.2, 1.0);
+        color = uDiffuseColor;
     }
 
     gl_FragColor = color * intensity;

@@ -57,26 +57,30 @@ Model *loadObj(const char *filename) {
     char* line = malloc(line_size);
     if (!line) return 0;
 
+    int numObjects = 0;
     int numVertices = 0;
     int numNormals = 0;
     int numTexCoords = 0;
     int numFaces = 0;
     while (fgets(line, line_size, file)) {
+        if (strstr(line, "o ")) numObjects++; // TODO nums below need to be reset for each new object, so that each object may have their own material etc
         if (strstr(line, "v ")) numVertices++;
         if (strstr(line, "vn ")) numNormals++;
         if (strstr(line, "vt ")) numTexCoords++;
         if (strstr(line, "f ")) numFaces++;
     }
 
-    GLfloat* vertices = malloc(sizeof(GLfloat) * numVertices * 3);
-    GLfloat* texCoords = malloc(sizeof(GLfloat) * numTexCoords * 2);
-    GLfloat* normals = malloc(sizeof(GLfloat) * numNormals * 3);
     Model* model = malloc(sizeof(Model));
+    model->numObjects = numObjects;
     model->numVertices = numFaces * 3;
-    model->numFaces = numFaces;
     model->vertices = malloc(sizeof(Vertex) * model->numVertices);
-    model->faceFirst = malloc(sizeof(GLint) * model->numFaces);
-    model->faceCount = malloc(sizeof(GLsizei) * model->numFaces);
+    model->faceFirst = malloc(sizeof(GLint) * numFaces);
+    model->faceCount = malloc(sizeof(GLsizei) * numFaces);
+    model->numFaces = numFaces;
+
+    GLfloat* vertices = malloc(sizeof(GLfloat) * numVertices * 3);
+    GLfloat* normals = malloc(sizeof(GLfloat) * numNormals * 3);
+    GLfloat* texCoords = malloc(sizeof(GLfloat) * numTexCoords * 2);
 
     GLfloat* pv = vertices;
     GLfloat* ptc = texCoords;
@@ -94,6 +98,9 @@ Model *loadObj(const char *filename) {
             strcat(path, p);
             *(path + strlen(path) - 1) = '\0';
             loadMTL(path);
+        }
+        if (strstr(line, "o ")) {
+            //TODO
         }
         if (strstr(line, "v ")) {
             char *p = strchr(line, ' ');
@@ -120,6 +127,9 @@ Model *loadObj(const char *filename) {
             *pn++ = y;
             *pn++ = z;
         }
+        if (strstr(line, "usemtl ")) {
+            //TODO
+        }
         if (strstr(line, "f ")) {
             char* p = strchr(line, ' ');
             for (int i = 0; i < 3; i++) {
@@ -145,8 +155,18 @@ Model *loadObj(const char *filename) {
     fclose(file);
 
     free(vertices);
-    free(texCoords);
     free(normals);
+    free(texCoords);
+
+    glGenBuffers(1, &model->vboId);
+    glBindBuffer(GL_ARRAY_BUFFER, model->vboId);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * model->numVertices, model->vertices, GL_STATIC_DRAW);
+    free(model->vertices);
+
+    model->material.diffuse[0] = 1.0f;
+    model->material.diffuse[1] = 0.0f;
+    model->material.diffuse[2] = 0.0f;
+    model->material.diffuse[3] = 1.0f;
 
     return model;
 }

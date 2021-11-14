@@ -1,3 +1,5 @@
 Debug
 lolo3d.vcxproj.user
 .vs
+*.o
+lolo3d

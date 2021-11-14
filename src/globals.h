@@ -13,10 +13,11 @@ extern int run;
 extern GLfloat cameraX;
 extern GLfloat cameraY;
 
-extern GLuint modelMatId;
-extern GLuint viewMatId;
-extern GLuint projMatId;
-extern GLuint enableTexture;
+extern GLint modelMatId;
+extern GLint viewMatId;
+extern GLint projMatId;
+extern GLint enableTexture;
+extern GLint diffuseColor;
 
 extern mat4 modelMat;
 extern mat4 viewMat;
