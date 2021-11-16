@@ -53,7 +53,9 @@ void mainloop() {
     glDisableVertexAttribArray(ATTRIB_NORMAL);
     glDisableVertexAttribArray(ATTRIB_TEXCOORD);
 
-    glDeleteBuffers(1, &model->vboId);
-    free(model->faceFirst);
-    free(model->faceCount);
+    for (int i = 0; i < model->numGroups; i++) {
+        glDeleteBuffers(1, &model->groups[i].vboId);
+        free(model->groups[i].faceFirst);
+        free(model->groups[i].faceCount);
+    }
 }

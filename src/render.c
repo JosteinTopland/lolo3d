@@ -18,9 +18,11 @@ void render(Model *model) {
     //glActiveTexture(GL_TEXTURE0);
     //glBindTexture(GL_TEXTURE_2D, 1); // TODO textureid
     //glUniform1i(samplerUniformLocation, 0); // GL_TEXTURE0
-    glUniform1i(enableTexture, false);
-    glUniform4fv(diffuseColor, 1, &model->material.diffuse[0]);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, model->vboId);
-    glMultiDrawArrays(GL_TRIANGLES, model->faceFirst, model->faceCount, model->numFaces);
+
+    for (int i = 0; i < model->numGroups; i++) {
+        glUniform1i(enableTexture, false);
+        glUniform4fv(diffuseColor, 1, &model->groups[i].material.diffuse[0]);
+        glBindBuffer(GL_ARRAY_BUFFER, model->groups[i].vboId);
+        glMultiDrawArrays(GL_TRIANGLES, model->groups[i].faceFirst, model->groups[i].faceCount, model->groups[i].numFaces);
+    }
 }

@@ -23,13 +23,19 @@ typedef struct {
 
 typedef struct {
     GLuint vboId;
-    int numObjects;
     GLsizeiptr numVertices;
+    GLsizei numNormals;
+    GLsizei numTexCoords;
     GLsizei numFaces;
     Vertex* vertices;
     GLint* faceFirst;
     GLsizei* faceCount;
     Material material;
+} Group;
+
+typedef struct {
+    Group* groups;
+    int numGroups;
 } Model;
 
 #endif
