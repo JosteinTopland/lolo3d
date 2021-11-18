@@ -19,6 +19,8 @@ void loadMTL(const char* filename) {
     if (!line) return;
 
     while (fgets(line, line_size, file)) {
+        if (strstr(line, "Kd ")) {
+        }
         if (strstr(line, "map_Kd ")) {
             char* p = strchr(line, ' ') + 1;
             char path[100] = "assets/";
@@ -96,6 +98,15 @@ Model *loadObj(const char *filename) {
         if (strstr(line, "vt ")) numTexCoords++;
         if (strstr(line, "f ")) numFaces++;
     }
+    // TODO last line. clean up
+    Group* group = &model->groups[groupIdx - 1];
+    group->numVertices = numFaces * 3; // 3 points per face obj format only! 
+    group->numNormals = numNormals;
+    group->numTexCoords = numTexCoords;
+    group->numFaces = numFaces;
+    group->vertices = malloc(sizeof(Vertex) * group->numVertices);
+    group->faceFirst = malloc(sizeof(GLint) * group->numFaces);
+    group->faceCount = malloc(sizeof(GLsizei) * group->numFaces);
 
     GLfloat* vertices = NULL;
     GLfloat* normals = NULL;
@@ -111,7 +122,7 @@ Model *loadObj(const char *filename) {
     groupIdx = 0;
     fseek(file, 0, SEEK_SET);
     while (fgets(line, line_size, file)) {
-        if (strstr(line, "mtllib ")) {
+        if (0 && strstr(line, "mtllib ")) {
             char* p = strchr(line, ' ') + 1;
             char path[100] = "assets/";
             strcat(path, p);
@@ -119,12 +130,6 @@ Model *loadObj(const char *filename) {
             loadMTL(path);
         }
         if (strstr(line, "g ") || strstr(line, "o ")) {
-            // TEST move into usemtl
-            model->groups[groupIdx].material.diffuse[0] = 0.0f;
-            model->groups[groupIdx].material.diffuse[1] = 1.0f;
-            model->groups[groupIdx].material.diffuse[2] = 0.0f;
-            model->groups[groupIdx].material.diffuse[3] = 1.0f;
-
             if (vertices != NULL) free(vertices);
             if (normals != NULL) free(normals);
             if (texCoords != NULL) free(texCoords);
@@ -140,7 +145,7 @@ Model *loadObj(const char *filename) {
             pgff = model->groups[groupIdx].faceFirst;
             pgfc = model->groups[groupIdx].faceCount;
 
-            faceFirst = 0;
+            //faceFirst = 0;
             groupIdx++;
         }
         if (strstr(line, "v ")) {
@@ -169,7 +174,10 @@ Model *loadObj(const char *filename) {
             *ptc++ = v;
         }
         if (strstr(line, "usemtl ")) {
-            //TODO
+            model->groups[groupIdx - 1].material.diffuse[0] = 0.0f;
+            model->groups[groupIdx - 1].material.diffuse[1] = 1.0f;
+            model->groups[groupIdx - 1].material.diffuse[2] = 0.0f;
+            model->groups[groupIdx - 1].material.diffuse[3] = 1.0f;
         }
         if (strstr(line, "f ")) {
             char* p = strchr(line, ' ');
