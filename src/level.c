@@ -9,7 +9,7 @@
 #include "input.h"
 
 void loadLevel() {
-    model = loadObj("assets/cube.obj");
+    model = loadObj("assets/colors.obj");
     if (!model) {
         fprintf(stderr, "Error loading obj.\n");
         return;
@@ -27,15 +27,7 @@ void loadLevel() {
 
 void mainloop() {
     loadLevel();
- 
-    glEnableVertexAttribArray(ATTRIB_POSITION);
-    glEnableVertexAttribArray(ATTRIB_NORMAL);
-    glEnableVertexAttribArray(ATTRIB_TEXCOORD);
-
-    glVertexAttribPointer(ATTRIB_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 3));
-    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 6));
-  
+   
     while (run) {
         int ticks = SDL_GetTicks();
 
@@ -48,10 +40,6 @@ void mainloop() {
         int delay = 1000 / fps - (SDL_GetTicks() - ticks);
         if (delay > 0) SDL_Delay(delay);
     }
-
-    glDisableVertexAttribArray(ATTRIB_POSITION);
-    glDisableVertexAttribArray(ATTRIB_NORMAL);
-    glDisableVertexAttribArray(ATTRIB_TEXCOORD);
 
     for (int i = 0; i < model->numGroups; i++) {
         glDeleteBuffers(1, &model->groups[i].vboId);

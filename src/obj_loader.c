@@ -66,7 +66,7 @@ Model *loadObj(const char *filename) {
         }
     }
     Model* model = malloc(sizeof(Model));
-    model->numGroups = numGroups;
+    model->numGroups = 1; // numGroups;
     model->groups = malloc(sizeof(Group) * model->numGroups);
 
     int groupIdx = 0;
@@ -76,14 +76,14 @@ Model *loadObj(const char *filename) {
     int numFaces = 0;
     fseek(file, 0, SEEK_SET);
     while (fgets(line, line_size, file)) {
-        if (strstr(line, "g ") || strstr(line, "o ")) {
+        /*if (strstr(line, "g ") || strstr(line, "o ")) {
             if (groupIdx > 0) {
                 Group* group = &model->groups[groupIdx - 1];
-                group->numVertices = numFaces * 3; // 3 points per face obj format only! 
+                group->numVertices = numVertices;
                 group->numNormals = numNormals;
                 group->numTexCoords = numTexCoords;
                 group->numFaces = numFaces;
-                group->vertices = malloc(sizeof(Vertex) * group->numVertices);
+                group->vertices = malloc(sizeof(Vertex) * group->numFaces * 3);
                 group->faceFirst = malloc(sizeof(GLint) * group->numFaces);
                 group->faceCount = malloc(sizeof(GLsizei) * group->numFaces);
             }
@@ -92,31 +92,31 @@ Model *loadObj(const char *filename) {
             numNormals = 0;
             numTexCoords = 0;
             numFaces = 0;
-        }
+        }*/
         if (strstr(line, "v ")) numVertices++;
         if (strstr(line, "vn ")) numNormals++;
         if (strstr(line, "vt ")) numTexCoords++;
         if (strstr(line, "f ")) numFaces++;
     }
-    // TODO last line. clean up
-    Group* group = &model->groups[groupIdx - 1];
-    group->numVertices = numFaces * 3; // 3 points per face obj format only! 
+
+    Group* group = &model->groups[0];
+    group->numVertices = numVertices;
     group->numNormals = numNormals;
     group->numTexCoords = numTexCoords;
     group->numFaces = numFaces;
-    group->vertices = malloc(sizeof(Vertex) * group->numVertices);
-    group->faceFirst = malloc(sizeof(GLint) * group->numFaces);
-    group->faceCount = malloc(sizeof(GLsizei) * group->numFaces);
+    group->vertices = malloc(sizeof(Vertex) * numFaces * 3); // 3 = triangle faces support only!
+    group->faceFirst = malloc(sizeof(GLint) * numFaces);
+    group->faceCount = malloc(sizeof(GLsizei) * numFaces);
 
-    GLfloat* vertices = NULL;
-    GLfloat* normals = NULL;
-    GLfloat* texCoords = NULL;
-    GLfloat* pv;
-    GLfloat* pn;
-    GLfloat* ptc;
-    Vertex* pgv;
-    GLint* pgff;
-    GLsizei* pgfc;
+    GLfloat* vertices = malloc(sizeof(GLfloat) * model->groups[0].numFaces * 3 * 3);
+    GLfloat* normals = malloc(sizeof(GLfloat) * numNormals * 3);
+    GLfloat* texCoords = malloc(sizeof(GLfloat) * numTexCoords * 2);
+    GLfloat* pv = vertices;
+    GLfloat* pn = normals;
+    GLfloat* ptc = texCoords;
+    Vertex* pgv = group->vertices;
+    GLint* pgff = group->faceFirst;
+    GLsizei* pgfc = group->faceCount;
     GLint faceFirst = 0;
 
     groupIdx = 0;
@@ -130,11 +130,11 @@ Model *loadObj(const char *filename) {
             loadMTL(path);
         }
         if (strstr(line, "g ") || strstr(line, "o ")) {
-            if (vertices != NULL) free(vertices);
+            /*if (vertices != NULL) free(vertices);
             if (normals != NULL) free(normals);
             if (texCoords != NULL) free(texCoords);
 
-            vertices = malloc(sizeof(GLfloat) * model->groups[groupIdx].numVertices * 3);
+            vertices = malloc(sizeof(GLfloat) * model->groups[groupIdx].numFaces * 3 * 3);
             normals = malloc(sizeof(GLfloat) * model->groups[groupIdx].numNormals * 3);
             texCoords = malloc(sizeof(GLfloat) * model->groups[groupIdx].numTexCoords * 2);
             pv = vertices;
@@ -143,10 +143,10 @@ Model *loadObj(const char *filename) {
 
             pgv = model->groups[groupIdx].vertices;
             pgff = model->groups[groupIdx].faceFirst;
-            pgfc = model->groups[groupIdx].faceCount;
+            pgfc = model->groups[groupIdx].faceCount;*/
 
             //faceFirst = 0;
-            groupIdx++;
+            //groupIdx++;
         }
         if (strstr(line, "v ")) {
             char *p = strchr(line, ' ');
@@ -174,10 +174,10 @@ Model *loadObj(const char *filename) {
             *ptc++ = v;
         }
         if (strstr(line, "usemtl ")) {
-            model->groups[groupIdx - 1].material.diffuse[0] = 0.0f;
-            model->groups[groupIdx - 1].material.diffuse[1] = 1.0f;
-            model->groups[groupIdx - 1].material.diffuse[2] = 0.0f;
-            model->groups[groupIdx - 1].material.diffuse[3] = 1.0f;
+            model->groups[0].material.diffuse[0] = 0.0f;
+            model->groups[0].material.diffuse[1] = 1.0f;
+            model->groups[0].material.diffuse[2] = 0.0f;
+            model->groups[0].material.diffuse[3] = 1.0f;
         }
         if (strstr(line, "f ")) {
             char* p = strchr(line, ' ');
@@ -206,7 +206,7 @@ Model *loadObj(const char *filename) {
     for (int i = 0; i < model->numGroups; i++) {
         glGenBuffers(1, &model->groups[i].vboId);
         glBindBuffer(GL_ARRAY_BUFFER, model->groups[i].vboId);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * model->groups[i].numVertices, model->groups[i].vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * model->groups[i].numFaces * 3, model->groups[i].vertices, GL_STATIC_DRAW);
         free(model->groups[i].vertices);
     }
 
