@@ -27,11 +27,13 @@ void render(Model *model) {
     glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 3));
     glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 6));
 
+    GLint first = 0;
+    glBindBuffer(GL_ARRAY_BUFFER, model->vboId);
     for (int i = 0; i < model->numGroups; i++) {
-        glUniform1i(enableTexture, false);
-        glUniform4fv(diffuseColor, 1, &model->groups[i].material.diffuse[0]);
-        glBindBuffer(GL_ARRAY_BUFFER, model->groups[i].vboId);
-        glMultiDrawArrays(GL_TRIANGLES, model->groups[i].faceFirst, model->groups[i].faceCount, model->groups[i].numFaces);
+        glUniform1i(enableTexture, model->materials[i].textureId);
+        glUniform4fv(diffuseColor, 1, &model->materials[i].diffuse[0]);
+        glDrawArrays(GL_TRIANGLES, first, model->indices[i]);
+        first += model->indices[i];
     }
 
     glDisableVertexAttribArray(ATTRIB_POSITION);

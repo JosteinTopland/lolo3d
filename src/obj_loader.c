@@ -5,7 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-void loadMTL(const char* filename) {
+int begins_with(const char* pre, const char* str) {
+    return !strncmp(pre, str, strlen(pre));
+}
+
+void loadMTL(const char* filename, Model* model) {
     FILE* file;
 #ifdef _WIN32
     fopen_s(&file, filename, "rb");
@@ -18,30 +22,53 @@ void loadMTL(const char* filename) {
     char* line = malloc(line_size);
     if (!line) return;
 
+    int numMaterials = 0;
     while (fgets(line, line_size, file)) {
-        if (strstr(line, "Kd ")) {
-        }
-        if (strstr(line, "map_Kd ")) {
-            char* p = strchr(line, ' ') + 1;
-            char path[100] = "assets/";
-            strcat(path, p);
-            *(path + strlen(path) - 1) = '\0';
+        if (begins_with("newmtl ", line)) numMaterials++;
+    }
 
-            GLuint textureId;
-            glGenTextures(1, &textureId);
-            glBindTexture(GL_TEXTURE_2D, textureId);
+    model->numMaterialLib = numMaterials;
+    model->materialLib = malloc(sizeof(Material) * model->numMaterialLib);
+    Material* pm = model->materialLib;
+
+    int firstMaterial = 1;
+    fseek(file, 0, SEEK_SET);
+    while (fgets(line, line_size, file)) {
+        if (begins_with("newmtl ", line)) {
+            if (!firstMaterial) pm++;
+            firstMaterial = 0;
+
+            char* p = strchr(line, ' ') + 1;
+            strcpy(pm->name, p);
+            pm->name[strlen(pm->name) - 2] = '\0';
+            pm->textureId = 0;
+        }
+        if (begins_with("Kd ", line)) {
+            char* p = strchr(line, ' ');
+            GLfloat r = strtof(p, &p);
+            GLfloat g = strtof(p, &p);
+            GLfloat b = strtof(p, &p);
+            pm->diffuse[0] = r;
+            pm->diffuse[1] = g;
+            pm->diffuse[2] = b;
+        }
+        if (begins_with("map_Kd ", line)) {
+            char* p = strchr(line, ' ') + 1;
+            char path[100];
+            strcpy(path, "assets/");
+            strcat(path, p);
+            path[strlen(path) - 2] = '\0';
+
+            glGenTextures(1, &pm->textureId);
+            glBindTexture(GL_TEXTURE_2D, pm->textureId);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             SDL_Surface* image = SDL_LoadBMP(path);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
             SDL_FreeSurface(image);
-
-            printf("%d=%s\n", textureId, path);
-            // TODO store the filename + textureid
         }
     }
-
     free(line);
     fclose(file);
 }
@@ -59,96 +86,56 @@ Model *loadObj(const char *filename) {
     char* line = malloc(line_size);
     if (!line) return 0;
 
-    int numGroups = 0;
-    while (fgets(line, line_size, file)) {
-        if (strstr(line, "g ") || strstr(line, "o ")) {
-            numGroups++;
-        }
-    }
     Model* model = malloc(sizeof(Model));
-    model->numGroups = 1; // numGroups;
-    model->groups = malloc(sizeof(Group) * model->numGroups);
-
-    int groupIdx = 0;
+    int numGroups = 0;
     int numVertices = 0;
     int numNormals = 0;
     int numTexCoords = 0;
     int numFaces = 0;
-    fseek(file, 0, SEEK_SET);
     while (fgets(line, line_size, file)) {
-        /*if (strstr(line, "g ") || strstr(line, "o ")) {
-            if (groupIdx > 0) {
-                Group* group = &model->groups[groupIdx - 1];
-                group->numVertices = numVertices;
-                group->numNormals = numNormals;
-                group->numTexCoords = numTexCoords;
-                group->numFaces = numFaces;
-                group->vertices = malloc(sizeof(Vertex) * group->numFaces * 3);
-                group->faceFirst = malloc(sizeof(GLint) * group->numFaces);
-                group->faceCount = malloc(sizeof(GLsizei) * group->numFaces);
-            }
-            groupIdx++;
-            numVertices = 0;
-            numNormals = 0;
-            numTexCoords = 0;
-            numFaces = 0;
-        }*/
-        if (strstr(line, "v ")) numVertices++;
-        if (strstr(line, "vn ")) numNormals++;
-        if (strstr(line, "vt ")) numTexCoords++;
-        if (strstr(line, "f ")) numFaces++;
+        if (begins_with("mtllib ", line)) {
+            char* p = strchr(line, ' ') + 1;
+            char path[100];
+            strcpy(path, "assets/");
+            strcat(path, p);
+            path[strlen(path) - 2] = '\0';
+            loadMTL(path, model);
+        }
+        if (begins_with("g ", line) || begins_with("o ", line)) numGroups++;
+        if (begins_with("v ", line)) numVertices++;
+        if (begins_with("vn ", line)) numNormals++;
+        if (begins_with("vt ", line)) numTexCoords++;
+        if (begins_with("f ", line)) numFaces++;
     }
 
-    Group* group = &model->groups[0];
-    group->numVertices = numVertices;
-    group->numNormals = numNormals;
-    group->numTexCoords = numTexCoords;
-    group->numFaces = numFaces;
-    group->vertices = malloc(sizeof(Vertex) * numFaces * 3); // 3 = triangle faces support only!
-    group->faceFirst = malloc(sizeof(GLint) * numFaces);
-    group->faceCount = malloc(sizeof(GLsizei) * numFaces);
+    model->numGroups = numGroups;
+    model->materials = malloc(sizeof(Material) * model->numGroups);
+    Material* pm = model->materials;
+    model->indices = malloc(sizeof(GLsizei) * model->numGroups);
+    GLsizei* pi = model->indices;
+    model->numVertices = numFaces * 3; // triangulate faces only!
+    model->vertices = malloc(sizeof(Vertex) * model->numVertices);
+    Vertex* pvv = model->vertices;
 
-    GLfloat* vertices = malloc(sizeof(GLfloat) * model->groups[0].numFaces * 3 * 3);
+    GLfloat* vertices = malloc(sizeof(GLfloat) * numVertices * 3);
     GLfloat* normals = malloc(sizeof(GLfloat) * numNormals * 3);
     GLfloat* texCoords = malloc(sizeof(GLfloat) * numTexCoords * 2);
     GLfloat* pv = vertices;
     GLfloat* pn = normals;
     GLfloat* ptc = texCoords;
-    Vertex* pgv = group->vertices;
-    GLint* pgff = group->faceFirst;
-    GLsizei* pgfc = group->faceCount;
-    GLint faceFirst = 0;
 
-    groupIdx = 0;
+    int firstGroup = 1;
+    GLsizei numIndices = 0;
     fseek(file, 0, SEEK_SET);
     while (fgets(line, line_size, file)) {
-        if (0 && strstr(line, "mtllib ")) {
-            char* p = strchr(line, ' ') + 1;
-            char path[100] = "assets/";
-            strcat(path, p);
-            *(path + strlen(path) - 1) = '\0';
-            loadMTL(path);
+        if (begins_with("g ", line) || begins_with("o ", line)) {
+            if (!firstGroup) {
+                *pi++ = numIndices;                
+            }
+            firstGroup = 0;
+            numIndices = 0;
         }
-        if (strstr(line, "g ") || strstr(line, "o ")) {
-            /*if (vertices != NULL) free(vertices);
-            if (normals != NULL) free(normals);
-            if (texCoords != NULL) free(texCoords);
-
-            vertices = malloc(sizeof(GLfloat) * model->groups[groupIdx].numFaces * 3 * 3);
-            normals = malloc(sizeof(GLfloat) * model->groups[groupIdx].numNormals * 3);
-            texCoords = malloc(sizeof(GLfloat) * model->groups[groupIdx].numTexCoords * 2);
-            pv = vertices;
-            pn = normals;
-            ptc = texCoords;
-
-            pgv = model->groups[groupIdx].vertices;
-            pgff = model->groups[groupIdx].faceFirst;
-            pgfc = model->groups[groupIdx].faceCount;*/
-
-            //faceFirst = 0;
-            //groupIdx++;
-        }
-        if (strstr(line, "v ")) {
+        if (begins_with("v ", line)) {
             char *p = strchr(line, ' ');
             GLfloat x = strtof(p, &p);
             GLfloat y = strtof(p, &p);
@@ -157,7 +144,7 @@ Model *loadObj(const char *filename) {
             *pv++ = y;
             *pv++ = z;
         }
-        if (strstr(line, "vn ")) {
+        if (begins_with("vn ", line)) {
             char* p = strchr(line, ' ');
             GLfloat x = strtof(p, &p);
             GLfloat y = strtof(p, &p);
@@ -166,49 +153,61 @@ Model *loadObj(const char *filename) {
             *pn++ = y;
             *pn++ = z;
         }
-        if (strstr(line, "vt ")) {
+        if (begins_with("vt ", line)) {
             char* p = strchr(line, ' ');
             GLfloat u = strtof(p, &p);
             GLfloat v = strtof(p, &p);
             *ptc++ = u;
             *ptc++ = v;
         }
-        if (strstr(line, "usemtl ")) {
-            model->groups[0].material.diffuse[0] = 0.0f;
-            model->groups[0].material.diffuse[1] = 1.0f;
-            model->groups[0].material.diffuse[2] = 0.0f;
-            model->groups[0].material.diffuse[3] = 1.0f;
+        if (begins_with("usemtl ", line)) {
+            char* p = strchr(line, ' ') + 1;
+            char name[100];
+            strcpy(name, p);
+            name[strlen(name) - 2] = '\0';
+
+            for (int i = 0; i < model->numMaterialLib; i++) {
+                int res = strcmp(model->materialLib[i].name, name);
+                if (!res) {
+                    *pm = model->materialLib[i];
+                }
+            }
+            pm++;
         }
-        if (strstr(line, "f ")) {
+        if (begins_with("f ", line)) {
             char* p = strchr(line, ' ');
             for (int i = 0; i < 3; i++) {
                 GLsizei vIdx = 3 * (strtol(p + 1, &p, 10) - 1);
                 GLsizei tIdx = 2 * (strtol(p + 1, &p, 10) - 1);
                 GLsizei nIdx = 3 * (strtol(p + 1, &p, 10) - 1);
-                pgv->position[0] = vertices[vIdx];
-                pgv->position[1] = vertices[vIdx + 1];
-                pgv->position[2] = vertices[vIdx + 2];
-                pgv->normal[0] = normals[nIdx];
-                pgv->normal[1] = normals[nIdx + 1];
-                pgv->normal[2] = normals[nIdx + 2];
-                pgv->textureCoord[0] = texCoords[tIdx];
-                pgv->textureCoord[1] = 1 - texCoords[tIdx + 1];
-                pgv++;
+                pvv->position[0] = vertices[vIdx];
+                pvv->position[1] = vertices[vIdx + 1];
+                pvv->position[2] = vertices[vIdx + 2];
+                pvv->normal[0] = normals[nIdx];
+                pvv->normal[1] = normals[nIdx + 1];
+                pvv->normal[2] = normals[nIdx + 2];
+                pvv->textureCoord[0] = texCoords[tIdx];
+                pvv->textureCoord[1] = 1 - texCoords[tIdx + 1];
+                pvv++;
+                numIndices++;
             }
-            *pgff++ = faceFirst;
-            *pgfc++ = 3;
-            faceFirst += 3;
         }
     }
+    *pi = numIndices;
     free(line);
     fclose(file);
 
-    for (int i = 0; i < model->numGroups; i++) {
-        glGenBuffers(1, &model->groups[i].vboId);
-        glBindBuffer(GL_ARRAY_BUFFER, model->groups[i].vboId);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * model->groups[i].numFaces * 3, model->groups[i].vertices, GL_STATIC_DRAW);
-        free(model->groups[i].vertices);
-    }
+    glGenBuffers(1, &model->vboId);
+    glBindBuffer(GL_ARRAY_BUFFER, model->vboId);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * model->numVertices, model->vertices, GL_STATIC_DRAW);
+    free(model->vertices);
 
     return model;
+}
+
+void freeModel(Model* model) {
+    glDeleteBuffers(1, &model->vboId);
+    free(model->materials);
+    free(model->indices);
+    free(model->materialLib);
 }

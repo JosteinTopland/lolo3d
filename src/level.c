@@ -9,7 +9,7 @@
 #include "input.h"
 
 void loadLevel() {
-    model = loadObj("assets/colors.obj");
+    model = loadObj("assets/cube.obj");
     if (!model) {
         fprintf(stderr, "Error loading obj.\n");
         return;
@@ -41,9 +41,5 @@ void mainloop() {
         if (delay > 0) SDL_Delay(delay);
     }
 
-    for (int i = 0; i < model->numGroups; i++) {
-        glDeleteBuffers(1, &model->groups[i].vboId);
-        free(model->groups[i].faceFirst);
-        free(model->groups[i].faceCount);
-    }
+    freeModel(model);
 }

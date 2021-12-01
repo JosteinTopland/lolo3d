@@ -3,7 +3,8 @@
 
 #include "types.h"
 
-void loadMTL(const char* filename);
+void loadMTL(const char* filename, Model* model);
 Model *loadObj(const char *filename);
+void freeModel(Model* model);
 
 #endif

@@ -9,10 +9,11 @@ enum {
     ATTRIB_TEXCOORD
 };
 typedef struct {
+    char name[100];
     float ambient[4];
     float diffuse[4];
     float specular[4];
-    char texture[50];
+    GLuint textureId;
 } Material;
 
 typedef struct {
@@ -23,19 +24,16 @@ typedef struct {
 
 typedef struct {
     GLuint vboId;
-    GLsizeiptr numVertices;
-    GLsizei numNormals;
-    GLsizei numTexCoords;
-    GLsizei numFaces;
-    Vertex* vertices;
-    GLint* faceFirst;
-    GLsizei* faceCount;
-    Material material;
-} Group;
 
-typedef struct {
-    Group* groups;
     int numGroups;
+    Material* materials;
+    GLsizei* indices;
+
+    int numMaterialLib;
+    Material* materialLib;
+
+    GLsizei numVertices;
+    Vertex* vertices;
 } Model;
 
 #endif
