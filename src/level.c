@@ -9,7 +9,7 @@
 #include "input.h"
 
 void loadLevel() {
-    model = loadObj("assets/cube.obj");
+    model = loadObj("assets/test.obj");
     if (!model) {
         fprintf(stderr, "Error loading obj.\n");
         return;

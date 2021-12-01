@@ -40,7 +40,7 @@ void loadMTL(const char* filename, Model* model) {
 
             char* p = strchr(line, ' ') + 1;
             strcpy(pm->name, p);
-            pm->name[strlen(pm->name) - 2] = '\0';
+            pm->name[strlen(pm->name) - 1] = '\0';
             pm->textureId = 0;
         }
         if (begins_with("Kd ", line)) {
@@ -57,7 +57,7 @@ void loadMTL(const char* filename, Model* model) {
             char path[100];
             strcpy(path, "assets/");
             strcat(path, p);
-            path[strlen(path) - 2] = '\0';
+            path[strlen(path) - 1] = '\0';
 
             glGenTextures(1, &pm->textureId);
             glBindTexture(GL_TEXTURE_2D, pm->textureId);
@@ -98,7 +98,7 @@ Model *loadObj(const char *filename) {
             char path[100];
             strcpy(path, "assets/");
             strcat(path, p);
-            path[strlen(path) - 2] = '\0';
+            path[strlen(path) - 1] = '\0';
             loadMTL(path, model);
         }
         if (begins_with("g ", line) || begins_with("o ", line)) numGroups++;
@@ -164,7 +164,7 @@ Model *loadObj(const char *filename) {
             char* p = strchr(line, ' ') + 1;
             char name[100];
             strcpy(name, p);
-            name[strlen(name) - 2] = '\0';
+            name[strlen(name) - 1] = '\0';
 
             for (int i = 0; i < model->numMaterialLib; i++) {
                 int res = strcmp(model->materialLib[i].name, name);
