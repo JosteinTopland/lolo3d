@@ -2,9 +2,9 @@ CC=gcc
 CFLAGS=`sdl2-config --cflags` -Wall
 LDFLAGS=`sdl2-config --libs` -lSDL2_mixer -lGLEW -lm
 OS=$(shell uname)
-ifeq ($(OS), Windows_NT)
+ifeq (,$(filter $(OS),Windows_NT,Linux))
 	LDFLAGS+= -lGL
-else ifeq ($(OS), Darwin)
+else ifeq ($(OS),Darwin)
 	LDFLAGS+= -framework OpenGL
 endif
 

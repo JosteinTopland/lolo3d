@@ -6,6 +6,6 @@
 void loadLevel();
 void mainloop();
 
-static Model* model;
+Model* model;
 
 #endif
