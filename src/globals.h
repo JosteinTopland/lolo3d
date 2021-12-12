@@ -5,22 +5,22 @@
 #include <cglm/cglm.h>
 #include <GL/glew.h>
 
-extern SDL_Window* window;
-extern const int windowWidth;
-extern const int windowHeight;
+SDL_Window* window;
+const int windowWidth;
+const int windowHeight;
 
-extern int run;
-extern GLfloat cameraX;
-extern GLfloat cameraY;
+int run;
+GLfloat cameraX;
+GLfloat cameraY;
 
-extern GLint modelMatId;
-extern GLint viewMatId;
-extern GLint projMatId;
-extern GLint enableTexture;
-extern GLint diffuseColor;
+GLint modelMatId;
+GLint viewMatId;
+GLint projMatId;
+GLint enableTexture;
+GLint diffuseColor;
 
-extern mat4 modelMat;
-extern mat4 viewMat;
-extern mat4 projMat;
+mat4 modelMat;
+mat4 viewMat;
+mat4 projMat;
 
 #endif

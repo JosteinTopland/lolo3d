@@ -5,11 +5,9 @@
 
 #include "globals.h"
 #include "obj_loader.h"
-#include "render.h"
-#include "input.h"
 
 void loadLevel() {
-    model = loadObj("assets/test.obj");
+    model = loadObj("assets/11571_Gingerbread_cookie_male_V2_l2.obj");
     if (!model) {
         fprintf(stderr, "Error loading obj.\n");
         return;
@@ -23,23 +21,4 @@ void loadLevel() {
     vec3 up = { 0.0f, -1.0f, 0.0f };
     glm_lookat(eye, center, up, viewMat);
     glUniformMatrix4fv(viewMatId, 1, GL_FALSE, &viewMat[0][0]);
-}
-
-void mainloop() {
-    loadLevel();
-   
-    while (run) {
-        int ticks = SDL_GetTicks();
-
-        input();
-        render(model);
-        SDL_GL_SwapWindow(window);
-
-        // wait
-        int fps = 100;
-        int delay = 1000 / fps - (SDL_GetTicks() - ticks);
-        if (delay > 0) SDL_Delay(delay);
-    }
-
-    freeModel(model);
 }

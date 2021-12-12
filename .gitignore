@@ -1,4 +1,5 @@
 Debug
+.vscode
 lolo3d.vcxproj.user
 .vs
 *.o

@@ -4,7 +4,6 @@
 #include "types.h"
 
 void loadLevel();
-void mainloop();
 
 Model* model;
 

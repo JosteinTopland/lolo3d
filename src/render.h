@@ -3,6 +3,6 @@
 
 #include "types.h"
 
-void render(Model *model);
+void render_level(Model *model);
 
 #endif

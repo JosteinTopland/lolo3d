@@ -1,11 +1,9 @@
 #include "input.h"
 
 #include <SDL2/SDL.h>
-#include <GL/glew.h>
-
 #include "globals.h"
 
-void input() {
+void input_keys() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_KEYDOWN) {

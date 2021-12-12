@@ -1,6 +1,6 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-void input();
+void input_keys();
 
 #endif

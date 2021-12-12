@@ -4,6 +4,8 @@
 #include "globals.h"
 #include "shader_loader.h"
 #include "level.h"
+#include "render.h"
+#include "input.h"
 
 int main(int argc, char* argv[])
 {
@@ -19,7 +21,20 @@ int main(int argc, char* argv[])
     glEnable(GL_DEPTH_TEST);
     glViewport(0, 0, windowWidth, windowHeight);
 
-    mainloop();
+    loadLevel();
+    while (run) {
+        int ticks = SDL_GetTicks();
+
+        input_keys();
+        render_level(model);
+        SDL_GL_SwapWindow(window);
+
+        // wait
+        int fps = 100;
+        int delay = 1000 / fps - (SDL_GetTicks() - ticks);
+        if (delay > 0) SDL_Delay(delay);
+    }
+    //freeModel(model);
 
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);

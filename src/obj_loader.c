@@ -105,16 +105,21 @@ Model *loadObj(const char *filename) {
         if (begins_with("v ", line)) numVertices++;
         if (begins_with("vn ", line)) numNormals++;
         if (begins_with("vt ", line)) numTexCoords++;
-        if (begins_with("f ", line)) numFaces++;
+        if (begins_with("f ", line)) {
+            char* p = strchr(line, ' ');
+            for (int i = 0; strtol(p + 1, &p, 10); i++) {
+                if (i % 3 == 0) numFaces++;
+            }
+        }
     }
 
     model->numGroups = numGroups;
+    model->numVertices = numFaces;
     model->materials = malloc(sizeof(Material) * model->numGroups);
-    Material* pm = model->materials;
     model->indices = malloc(sizeof(GLsizei) * model->numGroups);
-    GLsizei* pi = model->indices;
-    model->numVertices = numFaces * 3; // triangulate faces only!
     model->vertices = malloc(sizeof(Vertex) * model->numVertices);
+    Material* pm = model->materials;
+    GLsizei* pi = model->indices;
     Vertex* pvv = model->vertices;
 
     GLfloat* vertices = malloc(sizeof(GLfloat) * numVertices * 3);
@@ -176,7 +181,7 @@ Model *loadObj(const char *filename) {
         }
         if (begins_with("f ", line)) {
             char* p = strchr(line, ' ');
-            for (int i = 0; i < 3; i++) {
+            while (strtol(p + 1, NULL, 10)) {
                 GLsizei vIdx = 3 * (strtol(p + 1, &p, 10) - 1);
                 GLsizei tIdx = 2 * (strtol(p + 1, &p, 10) - 1);
                 GLsizei nIdx = 3 * (strtol(p + 1, &p, 10) - 1);
