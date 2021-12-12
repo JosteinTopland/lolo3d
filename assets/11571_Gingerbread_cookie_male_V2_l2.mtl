@@ -1,58 +1,46 @@
-# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# File Created: 16.11.2011 11:09:44
+# Blender MTL File: 'None'
+# Material Count: 4
 
 newmtl Cookie_Male
-	Ns 30.0000
-	Ni 1.5000
-	d 1.0000
-	Tr 0.0000
-	Tf 1.0000 1.0000 1.0000 
-	illum 2
-	Ka 1.0000 1.0000 1.0000
-	Kd 1.0000 1.0000 1.0000
-	Ks 0.0810 0.0810 0.0810
-	Ke 0.0000 0.0000 0.0000
-	map_Ka GingerBreadCookieMaleDiffuseMap.jpg
-	map_Kd GingerBreadCookieMaleDiffuseMap.jpg
+Ns 30.000009
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.081000 0.081000 0.081000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd GingerBreadCookieMaleDiffuseMap.jpg
 
 newmtl Cookie_Male_Metal
-	Ns 78.0000
-	Ni 1.5000
-	d 1.0000
-	Tr 0.0000
-	Tf 1.0000 1.0000 1.0000 
-	illum 2
-	Ka 1.0000 1.0000 1.0000
-	Kd 1.0000 1.0000 1.0000
-	Ks 0.2345 0.2345 0.1958
-	Ke 0.0000 0.0000 0.0000
-	map_Ka GingerBreadCookieMaleDiffuseMap.jpg
-	map_Kd GingerBreadCookieMaleDiffuseMap.jpg
+Ns 78.000011
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.221600 0.221600 0.221600
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd GingerBreadCookieMaleDiffuseMap.jpg
 
 newmtl Icing
-	Ns 53.0000
-	Ni 1.5000
-	d 1.0000
-	Tr 0.0000
-	Tf 1.0000 1.0000 1.0000 
-	illum 2
-	Ka 1.0000 1.0000 1.0000
-	Kd 1.0000 1.0000 1.0000
-	Ks 0.5400 0.5400 0.5400
-	Ke 0.0000 0.0000 0.0000
-	map_Ka GingerBreadCookieMaleDiffuseMap.jpg
-	map_Kd GingerBreadCookieMaleDiffuseMap.jpg
+Ns 53.000012
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.540000 0.540000 0.540000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd GingerBreadCookieMaleDiffuseMap.jpg
 
 newmtl matHook
-	Ns 55.0000
-	Ni 1.5000
-	d 1.0000
-	Tr 0.0000
-	Tf 1.0000 1.0000 1.0000 
-	illum 2
-	Ka 1.0000 1.0000 1.0000
-	Kd 1.0000 1.0000 1.0000
-	Ks 0.4500 0.4500 0.4500
-	Ke 0.0000 0.0000 0.0000
-	map_Ka Plane001DiffuseMap.jpg
-	map_Kd Plane001DiffuseMap.jpg
+Ns 55.000005
+Ka 1.000000 1.000000 1.000000
+Kd 1.000000 1.000000 1.000000
+Ks 0.450000 0.450000 0.450000
+Ke 0.000000 0.000000 0.000000
+Ni 1.500000
+d 1.000000
+illum 2
+map_Kd Plane001DiffuseMap.jpg

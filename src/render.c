@@ -3,7 +3,7 @@
 #include "globals.h"
 
 void render_level(Model *model) {
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.2f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     float angle = SDL_GetTicks() * 0.001f;
@@ -11,12 +11,8 @@ void render_level(Model *model) {
     vec3 axis = { 0.0f, 1.0f, 0.0f };
     glm_mat4_identity(modelMat);
     glm_translate(modelMat, pos);
-    glm_rotate(modelMat, angle, axis);
+    glm_rotate(modelMat, sin(angle), axis);
     glUniformMatrix4fv(modelMatId, 1, GL_FALSE, &modelMat[0][0]);
-
-    //glActiveTexture(GL_TEXTURE0);
-    //glBindTexture(GL_TEXTURE_2D, 1); // TODO textureid
-    //glUniform1i(samplerUniformLocation, 0); // GL_TEXTURE0
 
     glEnableVertexAttribArray(ATTRIB_POSITION);
     glEnableVertexAttribArray(ATTRIB_NORMAL);
@@ -28,7 +24,8 @@ void render_level(Model *model) {
 
     GLint first = 0;
     glBindBuffer(GL_ARRAY_BUFFER, model->vboId);
-    for (int i = 0; i < model->numGroups; i++) {
+    for (int i = 0; i < model->numIndices; i++) {
+        glBindTexture(GL_TEXTURE_2D, model->materials[i].textureId);
         glUniform1i(enableTexture, model->materials[i].textureId);
         glUniform4fv(diffuseColor, 1, &model->materials[i].diffuse[0]);
         glDrawArrays(GL_TRIANGLES, first, model->indices[i]);

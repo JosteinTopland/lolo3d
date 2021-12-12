@@ -1,12 +1,15 @@
 #include "obj_loader.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int begins_with(const char* pre, const char* str) {
-    return !strncmp(pre, str, strlen(pre));
+    const char* p = str;
+    while (isspace(*p)) p++;
+    return !strncmp(pre, p, strlen(pre));
 }
 
 void loadMTL(const char* filename, Model* model) {
@@ -64,7 +67,7 @@ void loadMTL(const char* filename, Model* model) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            SDL_Surface* image = SDL_LoadBMP(path);
+            SDL_Surface* image = IMG_Load(path);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
             SDL_FreeSurface(image);
         }
@@ -87,39 +90,34 @@ Model *loadObj(const char *filename) {
     if (!line) return 0;
 
     Model* model = malloc(sizeof(Model));
-    int numGroups = 0;
     int numVertices = 0;
     int numNormals = 0;
     int numTexCoords = 0;
     int numFaces = 0;
+    int numMaterials = 0;
     while (fgets(line, line_size, file)) {
         if (begins_with("mtllib ", line)) {
             char* p = strchr(line, ' ') + 1;
             char path[100];
             strcpy(path, "assets/");
             strcat(path, p);
-            path[strlen(path) - 1] = '\0';
+            path[strlen(path) - 1] = '\0'; // TODO support crlf
             loadMTL(path, model);
         }
-        if (begins_with("g ", line) || begins_with("o ", line)) numGroups++;
         if (begins_with("v ", line)) numVertices++;
         if (begins_with("vn ", line)) numNormals++;
         if (begins_with("vt ", line)) numTexCoords++;
-        if (begins_with("f ", line)) {
-            char* p = strchr(line, ' ');
-            for (int i = 0; strtol(p + 1, &p, 10); i++) {
-                if (i % 3 == 0) numFaces++;
-            }
-        }
+        if (begins_with("f ", line)) numFaces++;
+        if (begins_with("usemtl ", line)) numMaterials++;
     }
 
-    model->numGroups = numGroups;
-    model->numVertices = numFaces;
-    model->materials = malloc(sizeof(Material) * model->numGroups);
-    model->indices = malloc(sizeof(GLsizei) * model->numGroups);
+    model->numIndices = numMaterials;
+    model->numVertices = numFaces * 3; // triangular faces only, since GL_POLYGONS is not supported after OpenGL 3.1
+    model->indices = malloc(sizeof(GLsizei) * model->numIndices);
+    model->materials = malloc(sizeof(Material) * model->numIndices);
     model->vertices = malloc(sizeof(Vertex) * model->numVertices);
-    Material* pm = model->materials;
     GLsizei* pi = model->indices;
+    Material* pm = model->materials;
     Vertex* pvv = model->vertices;
 
     GLfloat* vertices = malloc(sizeof(GLfloat) * numVertices * 3);
@@ -129,17 +127,10 @@ Model *loadObj(const char *filename) {
     GLfloat* pn = normals;
     GLfloat* ptc = texCoords;
 
-    int firstGroup = 1;
-    GLsizei numIndices = 0;
+    int firstMaterial = 1;
+    int numIndices = 0;
     fseek(file, 0, SEEK_SET);
     while (fgets(line, line_size, file)) {
-        if (begins_with("g ", line) || begins_with("o ", line)) {
-            if (!firstGroup) {
-                *pi++ = numIndices;                
-            }
-            firstGroup = 0;
-            numIndices = 0;
-        }
         if (begins_with("v ", line)) {
             char *p = strchr(line, ' ');
             GLfloat x = strtof(p, &p);
@@ -170,7 +161,6 @@ Model *loadObj(const char *filename) {
             char name[100];
             strcpy(name, p);
             name[strlen(name) - 1] = '\0';
-
             for (int i = 0; i < model->numMaterialLib; i++) {
                 int res = strcmp(model->materialLib[i].name, name);
                 if (!res) {
@@ -178,10 +168,14 @@ Model *loadObj(const char *filename) {
                 }
             }
             pm++;
+
+            if (!firstMaterial) *pi++ = numIndices;
+            firstMaterial = 0;
+            numIndices = 0;
         }
         if (begins_with("f ", line)) {
             char* p = strchr(line, ' ');
-            while (strtol(p + 1, NULL, 10)) {
+            for (int i = 0; i < 3; i++) {
                 GLsizei vIdx = 3 * (strtol(p + 1, &p, 10) - 1);
                 GLsizei tIdx = 2 * (strtol(p + 1, &p, 10) - 1);
                 GLsizei nIdx = 3 * (strtol(p + 1, &p, 10) - 1);

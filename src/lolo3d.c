@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_mixer.h>
 #include <GL/glew.h>
 
 #include "globals.h"
@@ -12,6 +13,10 @@ int main(int argc, char* argv[])
     SDL_Init(SDL_INIT_VIDEO);
     window = SDL_CreateWindow("Lolo 3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_OPENGL);
     SDL_GLContext glContext = SDL_GL_CreateContext(window);
+    
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 1, 1024);
+    Mix_Music *music = Mix_LoadMUS("assets/christmas_dance_mix.mod");
+    Mix_PlayMusic(music, -1);
 
     glewInit();
     if (!installShaders()) {
@@ -38,6 +43,8 @@ int main(int argc, char* argv[])
 
     SDL_GL_DeleteContext(glContext);
     SDL_DestroyWindow(window);
+    Mix_FreeMusic(music);
+    Mix_CloseAudio();
     SDL_Quit();
 
     return 0;

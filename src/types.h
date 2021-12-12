@@ -25,9 +25,9 @@ typedef struct {
 typedef struct {
     GLuint vboId;
 
-    int numGroups;
-    Material* materials;
+    int numIndices;
     GLsizei* indices;
+    Material* materials;
 
     int numMaterialLib;
     Material* materialLib;
