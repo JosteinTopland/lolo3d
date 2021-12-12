@@ -1,36 +1,28 @@
-CC=gcc
-CFLAGS=`sdl2-config --cflags` -Wall
-LDFLAGS=`sdl2-config --libs` -lSDL2_mixer -lGLEW -lm
-OS=$(shell uname)
+SRCDIR  = src/
+SRCS    = $(wildcard $(SRCDIR)*.c)
+OBJS    = $(notdir $(SRCS:.c=.o))
+OUT     = lolo3d
+
+CC      = gcc
+CFLAGS  = $(shell sdl2-config --cflags) -Wall -std=c99 -g -O0
+LDFLAGS = $(shell sdl2-config --libs) -lSDL2_mixer -lGLEW -lm
+
+#os specifics
+OS = $(shell uname)
 ifeq (,$(filter $(OS),Windows_NT,Linux))
-	LDFLAGS+= -lGL
+	LDFLAGS += -lGL
 else ifeq ($(OS),Darwin)
-	LDFLAGS+= -framework OpenGL
+	LDFLAGS += -framework OpenGL
 endif
 
-lolo3d: lolo3d.o globals.o obj_loader.o render.o shader_loader.o level.o input.o
-	$(CC) -o lolo3d lolo3d.o globals.o obj_loader.o render.o shader_loader.o level.o input.o $(LDFLAGS)
+#link
+$(OUT): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^
 
-lolo3d.o : src/lolo3d.c
-	$(CC) -c $(CFLAGS) src/lolo3d.c
+#compile
+%.o: $(SRCDIR)%.c
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-globals.o : src/globals.c
-	$(CC) -c $(CFLAGS) src/globals.c
-
-obj_loader.o : src/obj_loader.c
-	$(CC) -c $(CFLAGS) src/obj_loader.c
-
-render.o : src/render.c
-	$(CC) -c $(CFLAGS) src/render.c
-
-shader_loader.o : src/shader_loader.c
-	$(CC) -c $(CFLAGS) src/shader_loader.c
-
-level.o : src/level.c
-	$(CC) -c $(CFLAGS) src/level.c
-
-input.o : src/input.c
-	$(CC) -c $(CFLAGS) src/input.c
-
+.PHONY: clean
 clean:
-	rm -f *.o lolo3d
+	rm -f $(OBJS) $(OUT)

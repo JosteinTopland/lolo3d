@@ -7,7 +7,7 @@
 #include "obj_loader.h"
 
 void loadLevel() {
-    model = loadObj("assets/11571_Gingerbread_cookie_male_V2_l2.obj");
+    model = loadObj("assets/test.obj");
     if (!model) {
         fprintf(stderr, "Error loading obj.\n");
         return;
