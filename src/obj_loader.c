@@ -5,20 +5,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
-int begins_with(const char* pre, const char* str) {
-    const char* p = str;
-    while (isspace(*p)) p++;
-    return !strncmp(pre, p, strlen(pre));
+const char* strtrim(char *s) {
+    while (isspace(*s)) s++;
+    if (!strlen(s)) return s;
+    char* p = s + strlen(s);
+    while (isspace(*--p));
+    *(p + 1) = '\0';
+    return s;
+}
+
+int begins_with(const char* pre, char* str) {
+    return !strncmp(pre, strtrim(str), strlen(pre));
 }
 
 void loadMTL(const char* filename, Model* model) {
     FILE* file;
-#ifdef _WIN32
-    fopen_s(&file, filename, "rb");
-#else
     file = fopen(filename, "rb");
-#endif
     if (!file) return;
 
     const int line_size = 300;
@@ -43,7 +47,7 @@ void loadMTL(const char* filename, Model* model) {
 
             char* p = strchr(line, ' ') + 1;
             strcpy(pm->name, p);
-            pm->name[strlen(pm->name) - 1] = '\0';
+            strtrim(pm->name);
             pm->textureId = 0;
         }
         if (begins_with("Kd ", line)) {
@@ -60,7 +64,7 @@ void loadMTL(const char* filename, Model* model) {
             char path[100];
             strcpy(path, "assets/");
             strcat(path, p);
-            path[strlen(path) - 1] = '\0';
+            strtrim(path);
 
             glGenTextures(1, &pm->textureId);
             glBindTexture(GL_TEXTURE_2D, pm->textureId);
@@ -78,11 +82,7 @@ void loadMTL(const char* filename, Model* model) {
 
 Model *loadObj(const char *filename) {
     FILE* file;
-#ifdef _WIN32
-    fopen_s(&file, filename, "rb");
-#else
     file = fopen(filename, "rb");
-#endif
     if (!file) return 0;
 
     const int line_size = 300;
@@ -95,13 +95,14 @@ Model *loadObj(const char *filename) {
     int numTexCoords = 0;
     int numFaces = 0;
     int numMaterials = 0;
+
     while (fgets(line, line_size, file)) {
         if (begins_with("mtllib ", line)) {
             char* p = strchr(line, ' ') + 1;
             char path[100];
             strcpy(path, "assets/");
             strcat(path, p);
-            path[strlen(path) - 1] = '\0'; // TODO support crlf
+            strtrim(path);
             loadMTL(path, model);
         }
         if (begins_with("v ", line)) numVertices++;
@@ -160,7 +161,7 @@ Model *loadObj(const char *filename) {
             char* p = strchr(line, ' ') + 1;
             char name[100];
             strcpy(name, p);
-            name[strlen(name) - 1] = '\0';
+            strtrim(name);
             for (int i = 0; i < model->numMaterialLib; i++) {
                 int res = strcmp(model->materialLib[i].name, name);
                 if (!res) {

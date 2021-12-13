@@ -6,11 +6,11 @@ void render_level(Model *model) {
     glClearColor(0.2f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float angle = SDL_GetTicks() * 0.002;
-    vec3 pos = { -3, sin(angle), 0 };
+    float angle = SDL_GetTicks() * 0.002f;
+    vec3 pos = { -3.0f, sinf(angle), 0.0f };
     glm_mat4_identity(modelMat);
     glm_translate(modelMat, pos);
-    glm_rotate(modelMat, sin(angle) * 0.5, GLM_YUP);
+    glm_rotate(modelMat, sinf(angle) * 0.5f, GLM_YUP);
     glUniformMatrix4fv(modelMatId, 1, GL_FALSE, &modelMat[0][0]);
 
     glEnableVertexAttribArray(ATTRIB_POSITION);
@@ -31,11 +31,11 @@ void render_level(Model *model) {
         first += model->indices[i];
     }
 
-    float angle2 = SDL_GetTicks() * 0.005;
-    vec3 pos2 = { 3, cos(angle2), 0 };
+    float angle2 = SDL_GetTicks() * 0.005f;
+    vec3 pos2 = { 3.0f, cosf(angle2), 0.0f };
     glm_mat4_identity(modelMat);
     glm_translate(modelMat, pos2);
-    glm_rotate(modelMat, sin(angle2) * 0.5, GLM_YUP);
+    glm_rotate(modelMat, sinf(angle2) * 0.5f, GLM_YUP);
     glUniformMatrix4fv(modelMatId, 1, GL_FALSE, &modelMat[0][0]);
 
     first = 0;

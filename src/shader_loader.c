@@ -9,11 +9,7 @@
 
 char* readFile(const char *filename) {
     FILE* file;
-#ifdef _WIN32
-    fopen_s(&file, filename, "rb");
-#else
     file = fopen(filename, "rb");
-#endif
     if (file) {
         fseek(file, 0, SEEK_END);
         long fsize = ftell(file);

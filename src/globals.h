@@ -19,8 +19,8 @@ GLint projMatId;
 GLint enableTexture;
 GLint diffuseColor;
 
-mat4 modelMat;
-mat4 viewMat;
-mat4 projMat;
+extern mat4 modelMat;
+extern mat4 viewMat;
+extern mat4 projMat;
 
 #endif
