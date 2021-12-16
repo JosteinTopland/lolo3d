@@ -9,7 +9,9 @@ LDFLAGS = $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lGLEW -lm
 
 #os specifics
 OS = $(shell uname)
-ifeq (,$(filter $(OS),Windows_NT,Linux))
+ifeq ($(OS),Windows_NT)
+	LDFLAGS += -lGL
+else ifeq ($(OS),Linux)
 	LDFLAGS += -lGL
 else ifeq ($(OS),Darwin)
 	LDFLAGS += -framework OpenGL
