@@ -3,7 +3,7 @@
 #include "globals.h"
 
 void render_level(Level *level) {
-    glClearColor(0.1f, 0.1f, 0.6f, 1.0f);
+    glClearColor(0.2f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     for (int i = 0; i < level->numObjects; i++) {
@@ -11,7 +11,7 @@ void render_level(Level *level) {
         Object *object = &level->objects[i];
         Model *model = object->model;
 
-        vec3 pos = { object->x, 0, object->y };
+        vec3 pos = { object->x, object->y, 0 };
         glm_mat4_identity(modelMat);
         glm_translate(modelMat, pos);
         glm_rotate(modelMat, object->rotation, GLM_YUP);

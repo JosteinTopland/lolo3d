@@ -72,7 +72,8 @@ void loadMTL(const char* filename, Model* model) {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
             SDL_Surface* image = IMG_Load(path);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, GL_RGB, GL_UNSIGNED_BYTE, image->pixels);
+            GLenum format = (image->format->format == SDL_PIXELFORMAT_RGB24) ? GL_RGB : GL_BGR;
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, image->w, image->h, 0, format, GL_UNSIGNED_BYTE, image->pixels);
             SDL_FreeSurface(image);
         }
     }
