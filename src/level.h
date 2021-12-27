@@ -5,6 +5,6 @@
 
 void loadLevel();
 
-Model* model;
+Level *level;
 
 #endif

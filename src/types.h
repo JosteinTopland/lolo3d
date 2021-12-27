@@ -23,6 +23,7 @@ typedef struct {
 } Vertex;
 
 typedef struct {
+    GLuint vaoId;
     GLuint vboId;
 
     int numIndices;
@@ -35,5 +36,16 @@ typedef struct {
     GLsizei numVertices;
     Vertex* vertices;
 } Model;
+
+typedef struct {
+    GLfloat x, y, rotation;
+    Model *model;
+} Object;
+
+typedef struct {
+    int numObjects;
+    Object *objects;
+} Level;
+
 
 #endif

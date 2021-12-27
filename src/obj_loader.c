@@ -83,7 +83,10 @@ void loadMTL(const char* filename, Model* model) {
 Model *loadObj(const char *filename) {
     FILE* file;
     file = fopen(filename, "rb");
-    if (!file) return 0;
+    if (!file) {
+        fprintf(stderr, "Error loading obj.\n");
+        return 0;
+    }
 
     const int line_size = 300;
     char* line = malloc(line_size);
@@ -196,6 +199,9 @@ Model *loadObj(const char *filename) {
     *pi = numIndices;
     free(line);
     fclose(file);
+
+    glGenVertexArrays(1, &model->vaoId);
+    glBindVertexArray(model->vaoId);
 
     glGenBuffers(1, &model->vboId);
     glBindBuffer(GL_ARRAY_BUFFER, model->vboId);

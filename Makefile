@@ -4,7 +4,7 @@ OBJS    = $(notdir $(SRCS:.c=.o))
 OUT     = lolo3d
 
 CC      = gcc
-CFLAGS  = $(shell sdl2-config --cflags) -Wall -std=c99
+CFLAGS  = $(shell sdl2-config --cflags) -Wall -std=c99 -g
 LDFLAGS = $(shell sdl2-config --libs) -lSDL2_image -lSDL2_mixer -lGLEW -lm
 
 #os specifics

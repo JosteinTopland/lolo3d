@@ -39,7 +39,10 @@ int installShaders() {
     glCompileShader(vertexShaderId);
     glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &compileStatus);
     if (compileStatus != GL_TRUE) {
-      fprintf(stderr, "Compile error on vertex shader.\n");
+      char info;
+      int infoLen;
+      glGetShaderInfoLog(vertexShaderId, 512, &infoLen, &info);
+      fprintf(stderr, "Compile error on vertex shader:\n%.*s", infoLen, &info);
       return 0;
     }
 
@@ -47,7 +50,10 @@ int installShaders() {
     glCompileShader(fragmentShaderId);
     glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &compileStatus);
     if (compileStatus != GL_TRUE) {
-      fprintf(stderr, "Compile error on fragment shader.\n");
+      char info;
+      int infoLen;
+      glGetShaderInfoLog(fragmentShaderId, 512, &infoLen, &info);
+      fprintf(stderr, "Compile error on fragment shader:\n%.*s", infoLen, &info);
       return 0;
     }
 

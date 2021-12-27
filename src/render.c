@@ -2,52 +2,43 @@
 
 #include "globals.h"
 
-void render_level(Model *model) {
-    glClearColor(0.2f, 0.0f, 0.0f, 1.0f);
+void render_level(Level *level) {
+    glClearColor(0.1f, 0.1f, 0.6f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    float angle = SDL_GetTicks() * 0.002f;
-    vec3 pos = { -3.0f, sinf(angle), 0.0f };
-    glm_mat4_identity(modelMat);
-    glm_translate(modelMat, pos);
-    glm_rotate(modelMat, sinf(angle) * 0.5f, GLM_YUP);
-    glUniformMatrix4fv(modelMatId, 1, GL_FALSE, &modelMat[0][0]);
+    for (int i = 0; i < level->numObjects; i++) {
+        if (!level->objects[i].model) continue;
+        Object *object = &level->objects[i];
+        Model *model = object->model;
 
-    glEnableVertexAttribArray(ATTRIB_POSITION);
-    glEnableVertexAttribArray(ATTRIB_NORMAL);
-    glEnableVertexAttribArray(ATTRIB_TEXCOORD);
+        vec3 pos = { object->x, 0, object->y };
+        glm_mat4_identity(modelMat);
+        glm_translate(modelMat, pos);
+        glm_rotate(modelMat, object->rotation, GLM_YUP);
+        glUniformMatrix4fv(modelMatId, 1, GL_FALSE, &modelMat[0][0]);
+        
+        glBindVertexArray(model->vaoId);
+        glBindBuffer(GL_ARRAY_BUFFER, model->vboId);
 
-    glVertexAttribPointer(ATTRIB_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-    glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 3));
-    glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 6));
+        glEnableVertexAttribArray(ATTRIB_POSITION);
+        glEnableVertexAttribArray(ATTRIB_NORMAL);
+        glEnableVertexAttribArray(ATTRIB_TEXCOORD);
 
-    GLint first = 0;
-    glBindBuffer(GL_ARRAY_BUFFER, model->vboId);
-    for (int i = 0; i < model->numIndices; i++) {
-        glBindTexture(GL_TEXTURE_2D, model->materials[i].textureId);
-        glUniform1i(enableTexture, model->materials[i].textureId);
-        glUniform4fv(diffuseColor, 1, &model->materials[i].diffuse[0]);
-        glDrawArrays(GL_TRIANGLES, first, model->indices[i]);
-        first += model->indices[i];
+        glVertexAttribPointer(ATTRIB_POSITION, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+        glVertexAttribPointer(ATTRIB_NORMAL, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 3));
+        glVertexAttribPointer(ATTRIB_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)(sizeof(GLfloat) * 6));
+
+        GLint first = 0;
+        for (int j = 0; j < model->numIndices; j++) {
+            if (model->materials[j].textureId) glBindTexture(GL_TEXTURE_2D, model->materials[j].textureId);
+            glUniform1i(enableTexture, model->materials[j].textureId);
+            glUniform4fv(diffuseColor, 1, &model->materials[j].diffuse[0]);
+            glDrawArrays(GL_TRIANGLES, first, model->indices[j]);
+            first += model->indices[j];
+        }
+
+        glDisableVertexAttribArray(ATTRIB_POSITION);
+        glDisableVertexAttribArray(ATTRIB_NORMAL);
+        glDisableVertexAttribArray(ATTRIB_TEXCOORD);
     }
-
-    float angle2 = SDL_GetTicks() * 0.005f;
-    vec3 pos2 = { 3.0f, cosf(angle2), 0.0f };
-    glm_mat4_identity(modelMat);
-    glm_translate(modelMat, pos2);
-    glm_rotate(modelMat, sinf(angle2) * 0.5f, GLM_YUP);
-    glUniformMatrix4fv(modelMatId, 1, GL_FALSE, &modelMat[0][0]);
-
-    first = 0;
-    for (int i = 0; i < model->numIndices; i++) {
-        glBindTexture(GL_TEXTURE_2D, model->materials[i].textureId);
-        glUniform1i(enableTexture, model->materials[i].textureId);
-        glUniform4fv(diffuseColor, 1, &model->materials[i].diffuse[0]);
-        glDrawArrays(GL_TRIANGLES, first, model->indices[i]);
-        first += model->indices[i];
-    }
-
-    glDisableVertexAttribArray(ATTRIB_POSITION);
-    glDisableVertexAttribArray(ATTRIB_NORMAL);
-    glDisableVertexAttribArray(ATTRIB_TEXCOORD);
 }
