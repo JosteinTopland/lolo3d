@@ -47,5 +47,4 @@ typedef struct {
     Object *objects;
 } Level;
 
-
 #endif
