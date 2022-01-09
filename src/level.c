@@ -9,10 +9,12 @@
 void loadLevel() {
     Model *rock = loadObj("assets/rock.obj");
     Model *tree = loadObj("assets/lowpolytree.obj");
+    Model *tux = loadObj("assets/tux.obj");
 
     Model *models[] = {
         rock,
-        tree
+        tree,
+        tux
     };
 
     int width = 11;
@@ -29,7 +31,7 @@ void loadLevel() {
         2, 2, 2, 2, 0, 0, 0, 2, 2, 0, 0,
         2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0,
         1, 2, 2, 1, 0, 0, 0, 0, 2, 2, 0,
-        1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0
+        1, 1, 1, 1, 1, 1, 0, 3, 0, 0, 0
     };
 
     level = malloc(sizeof(Level));
@@ -49,7 +51,7 @@ void loadLevel() {
     glm_perspective(glm_rad(50.0f), (float)windowWidth / windowHeight, 0.1f, 200.0f, projMat);
     glUniformMatrix4fv(projMatId, 1, GL_FALSE, &projMat[0][0]);
 
-    vec3 eye = { 30.0f, -10.0f, 15.0f };
+    vec3 eye = { 20.0f, -5.0f, 5.0f };
     vec3 center = { width * space * 0.42f, height * space * 0.5f, 0.0f };
     glm_lookat(eye, center, GLM_ZUP, viewMat);
     glUniformMatrix4fv(viewMatId, 1, GL_FALSE, &viewMat[0][0]);

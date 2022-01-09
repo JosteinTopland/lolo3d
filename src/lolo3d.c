@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 1, 1024);
     Mix_Music *music = Mix_LoadMUS("assets/christmas_dance_mix.mod");
     Mix_VolumeMusic(10);
-    Mix_PlayMusic(music, -1);
+    //Mix_PlayMusic(music, -1);
 
     glewInit();
 
