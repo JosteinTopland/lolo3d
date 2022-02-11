@@ -13,27 +13,27 @@ typedef struct {
     float ambient[4];
     float diffuse[4];
     float specular[4];
-    GLuint textureId;
+    GLuint texture_id;
 } Material;
 
 typedef struct {
     GLfloat position[3];
     GLfloat normal[3];
-    GLfloat textureCoord[2];
+    GLfloat texcoord[2];
 } Vertex;
 
 typedef struct {
-    GLuint vaoId;
-    GLuint vboId;
+    GLuint vao;
+    GLuint vbo;
 
-    int numIndices;
+    int num_indices;
     GLsizei* indices;
     Material* materials;
 
-    int numMaterialLib;
-    Material* materialLib;
+    int num_material_lib;
+    Material* material_lib;
 
-    GLsizei numVertices;
+    GLsizei num_vertices;
     Vertex* vertices;
 } Model;
 
@@ -43,7 +43,7 @@ typedef struct {
 } Object;
 
 typedef struct {
-    int numObjects;
+    int num_objects;
     Object *objects;
 } Level;
 

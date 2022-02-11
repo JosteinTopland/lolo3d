@@ -1,19 +1,19 @@
 #include "globals.h"
 
 SDL_Window* window;
-const int windowWidth = 1024;
-const int windowHeight = 768;
+const int window_width = 1024;
+const int window_height = 768;
 
 int run = 1;
-GLfloat cameraX = 0;
-GLfloat cameraY = -3.0f;
+GLfloat camera_x = 0;
+GLfloat camera_y = -3.0f;
 
-GLint modelMatId;
-GLint viewMatId;
-GLint projMatId;
-GLint enableTexture;
-GLint diffuseColor;
+GLint model_mat_id;
+GLint view_mat_id;
+GLint proj_mat_id;
+GLint enable_texture;
+GLint diffuse_color;
 
-mat4 modelMat;
-mat4 viewMat;
-mat4 projMat;
+mat4 model_mat;
+mat4 view_mat;
+mat4 proj_mat;

@@ -6,21 +6,21 @@
 #include <GL/glew.h>
 
 SDL_Window* window;
-const int windowWidth;
-const int windowHeight;
+const int window_width;
+const int window_height;
 
 int run;
-GLfloat cameraX;
-GLfloat cameraY;
+GLfloat camera_x;
+GLfloat camera_y;
 
-GLint modelMatId;
-GLint viewMatId;
-GLint projMatId;
-GLint enableTexture;
-GLint diffuseColor;
+GLint model_mat_id;
+GLint view_mat_id;
+GLint proj_mat_id;
+GLint enable_texture;
+GLint diffuse_color;
 
-extern mat4 modelMat;
-extern mat4 viewMat;
-extern mat4 projMat;
+extern mat4 model_mat;
+extern mat4 view_mat;
+extern mat4 proj_mat;
 
 #endif

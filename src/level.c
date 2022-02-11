@@ -6,10 +6,10 @@
 #include "globals.h"
 #include "obj_loader.h"
 
-void loadLevel() {
-    Model *rock = loadObj("assets/rock.obj");
-    Model *tree = loadObj("assets/lowpolytree.obj");
-    Model *tux = loadObj("assets/tux.obj");
+void load_level() {
+    Model *rock = load_obj("assets/rock.obj");
+    Model *tree = load_obj("assets/lowpolytree.obj");
+    Model *tux = load_obj("assets/tux.obj");
 
     Model *models[] = {
         rock,
@@ -35,9 +35,9 @@ void loadLevel() {
     };
 
     level = malloc(sizeof(Level));
-    level->numObjects = width * height;
-    level->objects = malloc(sizeof(Object) * level->numObjects);
-    for (int i = 0; i < level->numObjects; i++) {
+    level->num_objects = width * height;
+    level->objects = malloc(sizeof(Object) * level->num_objects);
+    for (int i = 0; i < level->num_objects; i++) {
         if (map[i]) {
             level->objects[i].x = (i % width) * space;
             level->objects[i].y = (height - i / width) * space;
@@ -48,11 +48,11 @@ void loadLevel() {
         }
     }
 
-    glm_perspective(glm_rad(50.0f), (float)windowWidth / windowHeight, 0.1f, 200.0f, projMat);
-    glUniformMatrix4fv(projMatId, 1, GL_FALSE, &projMat[0][0]);
+    glm_perspective(glm_rad(50.0f), (float)window_width / window_height, 0.1f, 200.0f, proj_mat);
+    glUniformMatrix4fv(proj_mat_id, 1, GL_FALSE, &proj_mat[0][0]);
 
     vec3 eye = { 20.0f, -5.0f, 5.0f };
     vec3 center = { width * space * 0.42f, height * space * 0.5f, 0.0f };
-    glm_lookat(eye, center, GLM_ZUP, viewMat);
-    glUniformMatrix4fv(viewMatId, 1, GL_FALSE, &viewMat[0][0]);
+    glm_lookat(eye, center, GLM_ZUP, view_mat);
+    glUniformMatrix4fv(view_mat_id, 1, GL_FALSE, &view_mat[0][0]);
 }

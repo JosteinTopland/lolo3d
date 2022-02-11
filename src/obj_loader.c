@@ -20,7 +20,7 @@ int begins_with(const char* pre, char* str) {
     return !strncmp(pre, strtrim(str), strlen(pre));
 }
 
-void loadMTL(const char* filename, Model* model) {
+void load_mtl(const char* filename, Model* model) {
     FILE* file;
     file = fopen(filename, "rb");
     if (!file) return;
@@ -34,9 +34,9 @@ void loadMTL(const char* filename, Model* model) {
         if (begins_with("newmtl ", line)) numMaterials++;
     }
 
-    model->numMaterialLib = numMaterials;
-    model->materialLib = malloc(sizeof(Material) * model->numMaterialLib);
-    Material* pm = model->materialLib;
+    model->num_material_lib = numMaterials;
+    model->material_lib = malloc(sizeof(Material) * model->num_material_lib);
+    Material* pm = model->material_lib;
 
     int firstMaterial = 1;
     fseek(file, 0, SEEK_SET);
@@ -48,7 +48,7 @@ void loadMTL(const char* filename, Model* model) {
             char* p = strchr(line, ' ') + 1;
             strcpy(pm->name, p);
             strtrim(pm->name);
-            pm->textureId = 0;
+            pm->texture_id = 0;
         }
         if (begins_with("Kd ", line)) {
             char* p = strchr(line, ' ');
@@ -66,8 +66,8 @@ void loadMTL(const char* filename, Model* model) {
             strcat(path, p);
             strtrim(path);
 
-            glGenTextures(1, &pm->textureId);
-            glBindTexture(GL_TEXTURE_2D, pm->textureId);
+            glGenTextures(1, &pm->texture_id);
+            glBindTexture(GL_TEXTURE_2D, pm->texture_id);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -81,7 +81,7 @@ void loadMTL(const char* filename, Model* model) {
     fclose(file);
 }
 
-Model *loadObj(const char *filename) {
+Model *load_obj(const char *filename) {
     FILE* file;
     file = fopen(filename, "rb");
     if (!file) {
@@ -107,7 +107,7 @@ Model *loadObj(const char *filename) {
             strcpy(path, "assets/");
             strcat(path, p);
             strtrim(path);
-            loadMTL(path, model);
+            load_mtl(path, model);
         }
         if (begins_with("v ", line)) numVertices++;
         if (begins_with("vn ", line)) numNormals++;
@@ -116,11 +116,11 @@ Model *loadObj(const char *filename) {
         if (begins_with("usemtl ", line)) numMaterials++;
     }
 
-    model->numIndices = numMaterials;
-    model->numVertices = numFaces * 3; // triangular faces only, since GL_POLYGONS is not supported after OpenGL 3.1
-    model->indices = malloc(sizeof(GLsizei) * model->numIndices);
-    model->materials = malloc(sizeof(Material) * model->numIndices);
-    model->vertices = malloc(sizeof(Vertex) * model->numVertices);
+    model->num_indices = numMaterials;
+    model->num_vertices = numFaces * 3; // triangular faces only, since GL_POLYGONS is not supported after OpenGL 3.1
+    model->indices = malloc(sizeof(GLsizei) * model->num_indices);
+    model->materials = malloc(sizeof(Material) * model->num_indices);
+    model->vertices = malloc(sizeof(Vertex) * model->num_vertices);
     GLsizei* pi = model->indices;
     Material* pm = model->materials;
     Vertex* pvv = model->vertices;
@@ -166,10 +166,10 @@ Model *loadObj(const char *filename) {
             char name[100];
             strcpy(name, p);
             strtrim(name);
-            for (int i = 0; i < model->numMaterialLib; i++) {
-                int res = strcmp(model->materialLib[i].name, name);
+            for (int i = 0; i < model->num_material_lib; i++) {
+                int res = strcmp(model->material_lib[i].name, name);
                 if (!res) {
-                    *pm = model->materialLib[i];
+                    *pm = model->material_lib[i];
                 }
             }
             pm++;
@@ -190,8 +190,8 @@ Model *loadObj(const char *filename) {
                 pvv->normal[0] = normals[nIdx];
                 pvv->normal[1] = normals[nIdx + 1];
                 pvv->normal[2] = normals[nIdx + 2];
-                pvv->textureCoord[0] = texCoords[tIdx];
-                pvv->textureCoord[1] = 1 - texCoords[tIdx + 1];
+                pvv->texcoord[0] = texCoords[tIdx];
+                pvv->texcoord[1] = 1 - texCoords[tIdx + 1];
                 pvv++;
                 numIndices++;
             }
@@ -201,20 +201,20 @@ Model *loadObj(const char *filename) {
     free(line);
     fclose(file);
 
-    glGenVertexArrays(1, &model->vaoId);
-    glBindVertexArray(model->vaoId);
+    glGenVertexArrays(1, &model->vao);
+    glBindVertexArray(model->vao);
 
-    glGenBuffers(1, &model->vboId);
-    glBindBuffer(GL_ARRAY_BUFFER, model->vboId);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * model->numVertices, model->vertices, GL_STATIC_DRAW);
+    glGenBuffers(1, &model->vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, model->vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * model->num_vertices, model->vertices, GL_STATIC_DRAW);
     free(model->vertices);
 
     return model;
 }
 
-void freeModel(Model* model) {
-    glDeleteBuffers(1, &model->vboId);
+void free_model(Model* model) {
+    glDeleteBuffers(1, &model->vbo);
     free(model->materials);
     free(model->indices);
-    free(model->materialLib);
+    free(model->material_lib);
 }

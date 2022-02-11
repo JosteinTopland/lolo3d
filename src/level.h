@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-void loadLevel();
+void load_level();
 
 Level *level;
 

@@ -7,7 +7,7 @@
 #include "types.h"
 #include "globals.h"
 
-char* readFile(const char *filename) {
+char* read_file(const char *filename) {
     FILE* file;
     file = fopen(filename, "rb");
     if (file) {
@@ -25,13 +25,13 @@ char* readFile(const char *filename) {
     return 0;
 }
 
-int installShaders() {
+int install_shaders() {
     GLuint programId = glCreateProgram();
     GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
     GLint compileStatus;
-    char* vertexShaderStr = readFile("src/vertex_shader.glsl");
-    char* fragmentShaderStr = readFile("src/fragment_shader.glsl");
+    char* vertexShaderStr = read_file("src/vertex_shader.glsl");
+    char* fragmentShaderStr = read_file("src/fragment_shader.glsl");
     const GLchar* vertexShaderStrs[] = { vertexShaderStr };
     const GLchar* fragmentShaderStrs[] = { fragmentShaderStr };
 
@@ -80,11 +80,11 @@ int installShaders() {
     
     glUseProgram(programId);
 
-    modelMatId = glGetUniformLocation(programId, "modelMat");
-    viewMatId = glGetUniformLocation(programId, "viewMat");
-    projMatId = glGetUniformLocation(programId, "projMat");
-    enableTexture = glGetUniformLocation(programId, "uEnableTexture");
-    diffuseColor = glGetUniformLocation(programId, "uDiffuseColor");
+    model_mat_id = glGetUniformLocation(programId, "modelMat");
+    view_mat_id = glGetUniformLocation(programId, "viewMat");
+    proj_mat_id = glGetUniformLocation(programId, "projMat");
+    enable_texture = glGetUniformLocation(programId, "uEnableTexture");
+    diffuse_color = glGetUniformLocation(programId, "uDiffuseColor");
 
     return 1;
 }

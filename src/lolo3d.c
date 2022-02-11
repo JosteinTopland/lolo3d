@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
 
-    window = SDL_CreateWindow("Lolo 3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow("Lolo 3D", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, window_width, window_height, SDL_WINDOW_OPENGL);
     SDL_GLContext glContext = SDL_GL_CreateContext(window);
 
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 1, 1024);
@@ -30,11 +30,11 @@ int main(int argc, char* argv[])
     const unsigned char *glVersion = glGetString(GL_VERSION);
     printf("GL_VERSION: %s\n", glVersion);
 
-    if (!installShaders()) return 1;
+    if (!install_shaders()) return 1;
     glEnable(GL_DEPTH_TEST);
-    glViewport(0, 0, windowWidth, windowHeight);
+    glViewport(0, 0, window_width, window_height);
 
-    loadLevel();
+    load_level();
     while (run) {
         int ticks = SDL_GetTicks();
 
