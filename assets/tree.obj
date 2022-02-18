@@ -1,6 +1,6 @@
 # Blender v2.93.4 OBJ File: ''
 # www.blender.org
-mtllib rock.mtl
+mtllib tree.mtl
 o Cube
 v 0.622523 0.622523 1.232492
 v 0.622523 0.622523 -0.012554

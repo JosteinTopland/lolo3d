@@ -8,8 +8,8 @@
 
 void load_level() {
     Model *rock = load_obj("assets/rock.obj");
-    Model *tree = load_obj("assets/lowpolytree.obj");
-    Model *tux = load_obj("assets/tux.obj");
+    Model *tree = load_obj("assets/tree.obj");
+    Model *tux = load_obj("assets/hero.obj");
 
     Model *models[] = {
         rock,
