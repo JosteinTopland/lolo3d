@@ -10,11 +10,13 @@ void load_level() {
     Model *rock = load_obj("assets/rock.obj");
     Model *tree = load_obj("assets/tree.obj");
     Model *tux = load_obj("assets/hero.obj");
+    Model *cup = load_obj("assets/cup.obj");
 
     Model *models[] = {
         rock,
         tree,
-        tux
+        tux,
+        cup
     };
 
     int width = 11;
@@ -31,7 +33,7 @@ void load_level() {
         2, 2, 2, 2, 0, 0, 0, 2, 2, 0, 0,
         2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0,
         1, 2, 2, 1, 0, 0, 0, 0, 2, 2, 0,
-        1, 1, 1, 1, 1, 1, 0, 3, 0, 0, 0
+        1, 1, 1, 1, 1, 1, 4, 3, 0, 0, 0
     };
 
     level = malloc(sizeof(Level));

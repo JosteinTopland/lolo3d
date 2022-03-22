@@ -20,5 +20,5 @@ void main()
         color = uDiffuseColor;
     }
 
-    color *= intensity * 2.0;
+    color *= intensity * 1.5;
 }

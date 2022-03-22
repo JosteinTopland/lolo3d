@@ -1,8 +1,8 @@
 #include "globals.h"
 
 SDL_Window* window;
-const int window_width = 1024;
-const int window_height = 768;
+const int window_width = 800;
+const int window_height = 600;
 
 int run = 1;
 GLfloat camera_x = 0;
