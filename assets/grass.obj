@@ -1,6 +1,6 @@
 # Blender v2.93.4 OBJ File: ''
 # www.blender.org
-mtllib rock.mtl
+mtllib grass.mtl
 o Cube
 v 1.000000 1.000000 -1.000000
 v 1.000000 -1.000000 -1.000000

@@ -8,20 +8,18 @@
 
 void load_level() {
     Model *rock = load_obj("assets/rock.obj");
-    Model *tree = load_obj("assets/tree.obj");
-    Model *tux = load_obj("assets/hero.obj");
+    Model *tree = load_obj("assets/grass.obj");
     Model *cup = load_obj("assets/cup.obj");
 
     Model *models[] = {
         rock,
         tree,
-        tux,
         cup
     };
 
     int width = 11;
     int height = 11;
-    float space = 2.5f;
+    float space = 2.0f;
     int map[] = {
         1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 2,
         1, 2, 2, 1, 0, 0, 0, 1, 1, 2, 2,
@@ -33,7 +31,7 @@ void load_level() {
         2, 2, 2, 2, 0, 0, 0, 2, 2, 0, 0,
         2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0,
         1, 2, 2, 1, 0, 0, 0, 0, 2, 2, 0,
-        1, 1, 1, 1, 1, 1, 4, 3, 0, 0, 0
+        1, 1, 1, 1, 1, 1, 0, 3, 0, 0, 0
     };
 
     level = malloc(sizeof(Level));
@@ -53,7 +51,7 @@ void load_level() {
     glm_perspective(glm_rad(50.0f), (float)window_width / window_height, 0.1f, 200.0f, proj_mat);
     glUniformMatrix4fv(proj_mat_id, 1, GL_FALSE, &proj_mat[0][0]);
 
-    vec3 eye = { 20.0f, -5.0f, 5.0f };
+    vec3 eye = { 30.0f, -10.0f, 10.0f };
     vec3 center = { width * space * 0.42f, height * space * 0.5f, 0.0f };
     glm_lookat(eye, center, GLM_ZUP, view_mat);
     glUniformMatrix4fv(view_mat_id, 1, GL_FALSE, &view_mat[0][0]);
