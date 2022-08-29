@@ -1,12 +1,8 @@
 #include "globals.h"
 
-SDL_Window* window;
-const int window_width = 800;
-const int window_height = 600;
-
-int run = 1;
-GLfloat camera_x = 0;
-GLfloat camera_y = -3.0f;
+char run = 1;
+GLfloat cam_x = 0.0f;
+GLfloat cam_y = 30.0f;
 
 GLint model_mat_id;
 GLint view_mat_id;

@@ -1,17 +1,12 @@
 #ifndef DATA_H
 #define DATA_H
 
-#include <SDL2/SDL.h>
 #include <cglm/cglm.h>
 #include <GL/glew.h>
 
-SDL_Window* window;
-const int window_width;
-const int window_height;
-
-int run;
-GLfloat camera_x;
-GLfloat camera_y;
+char run;
+GLfloat cam_x;
+GLfloat cam_y;
 
 GLint model_mat_id;
 GLint view_mat_id;

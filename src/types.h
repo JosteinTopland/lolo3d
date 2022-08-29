@@ -2,6 +2,7 @@
 #define TYPES_H
 
 #include <GL/glew.h>
+#include <SDL2/SDL_mixer.h>
 
 enum {
     ATTRIB_POSITION,
@@ -43,8 +44,11 @@ typedef struct {
 } Object;
 
 typedef struct {
+    int num_models;
+    Model **models;
     int num_objects;
     Object *objects;
+    Mix_Music *music;
 } Level;
 
 #endif

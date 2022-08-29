@@ -1,58 +1,44 @@
 #include "level.h"
 
-#include <stdio.h>
-#include <cglm/cglm.h>
-
-#include "globals.h"
 #include "obj_loader.h"
 
-void load_level() {
-    Model *rock = load_obj("assets/rock.obj");
-    Model *tree = load_obj("assets/grass.obj");
-    Model *cup = load_obj("assets/cup.obj");
+Level *load_level(int num) {
+    Level *level = malloc(sizeof(Level));
 
-    Model *models[] = {
-        rock,
-        tree,
-        cup
-    };
+    level->music = Mix_LoadMUS("assets/ARCANE.MOD");
+    Mix_VolumeMusic(50);
+    Mix_PlayMusic(level->music, -1);
 
-    int width = 11;
-    int height = 11;
-    float space = 2.0f;
-    int map[] = {
-        1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 2,
-        1, 2, 2, 1, 0, 0, 0, 1, 1, 2, 2,
-        0, 2, 2, 1, 1, 1, 0, 1, 1, 1, 2,
-        0, 0, 2, 2, 1, 1, 0, 1, 1, 1, 2,
-        0, 0, 0, 0, 1, 1, 0, 1, 1, 2, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,
-        0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0,
-        2, 2, 2, 2, 0, 0, 0, 2, 2, 0, 0,
-        2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0,
-        1, 2, 2, 1, 0, 0, 0, 0, 2, 2, 0,
-        1, 1, 1, 1, 1, 1, 0, 3, 0, 0, 0
-    };
+    level->num_models = 3;
+    level->models = malloc(sizeof(Model) * level->num_models);
+    level->models[0] = load_obj("assets/grass.obj");
+    level->models[1] = load_obj("assets/rock.obj");
+    level->models[2] = load_obj("assets/cup.obj");
 
-    level = malloc(sizeof(Level));
     level->num_objects = width * height;
     level->objects = malloc(sizeof(Object) * level->num_objects);
     for (int i = 0; i < level->num_objects; i++) {
-        if (map[i]) {
-            level->objects[i].x = (i % width) * space;
-            level->objects[i].y = (height - i / width) * space;
+        int offset = num * width * height;
+        char c = levels[i + offset];
+        Model *model = level->models[c - 1];
+        if (c) {
+            level->objects[i].x = (i % width) * 2;
+            level->objects[i].y = (height - i / width) * 2;
             level->objects[i].rotation = 0;
-            level->objects[i].model = models[map[i] - 1];
+            level->objects[i].model = model;
         } else {
             level->objects[i].model = NULL;
         }
     }
 
-    glm_perspective(glm_rad(50.0f), (float)window_width / window_height, 0.1f, 200.0f, proj_mat);
-    glUniformMatrix4fv(proj_mat_id, 1, GL_FALSE, &proj_mat[0][0]);
+    return level;
+}
 
-    vec3 eye = { 30.0f, -10.0f, 10.0f };
-    vec3 center = { width * space * 0.42f, height * space * 0.5f, 0.0f };
-    glm_lookat(eye, center, GLM_ZUP, view_mat);
-    glUniformMatrix4fv(view_mat_id, 1, GL_FALSE, &view_mat[0][0]);
+void free_level(Level *level)
+{
+    for (int i = 0; i < level->num_models; i++) {
+        free_model(level->models[i]);
+    }
+    Mix_FreeMusic(level->music);
+    free(level);
 }

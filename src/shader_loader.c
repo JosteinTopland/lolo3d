@@ -1,11 +1,7 @@
 #include "shader_loader.h"
 
-#include <SDL2/SDL.h>
-#include <GL/glew.h>
-#include <stdio.h>
-
-#include "types.h"
 #include "globals.h"
+#include "types.h"
 
 char* read_file(const char *filename) {
     FILE* file;
@@ -25,7 +21,9 @@ char* read_file(const char *filename) {
     return 0;
 }
 
-int install_shaders() {
+void install_shaders() {
+    printf("GL_VERSION: %s\n", glGetString(GL_VERSION));
+
     GLuint programId = glCreateProgram();
     GLuint vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
     GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
@@ -43,7 +41,7 @@ int install_shaders() {
       int infoLen;
       glGetShaderInfoLog(vertexShaderId, 512, &infoLen, &info);
       fprintf(stderr, "Compile error on vertex shader:\n%.*s", infoLen, &info);
-      return 0;
+      exit(EXIT_FAILURE);
     }
 
     glShaderSource(fragmentShaderId, 1, fragmentShaderStrs, NULL);
@@ -54,7 +52,7 @@ int install_shaders() {
       int infoLen;
       glGetShaderInfoLog(fragmentShaderId, 512, &infoLen, &info);
       fprintf(stderr, "Compile error on fragment shader:\n%.*s", infoLen, &info);
-      return 0;
+      exit(EXIT_FAILURE);
     }
 
     glAttachShader(programId, vertexShaderId);
@@ -70,7 +68,7 @@ int install_shaders() {
     glGetProgramiv(programId, GL_LINK_STATUS, &linkStatus);
     if (linkStatus != GL_TRUE) {
       fprintf(stderr, "Link error on shaders.\n");
-      return 0;
+      exit(EXIT_FAILURE);
     }
 
     free(vertexShaderStr);
@@ -85,6 +83,4 @@ int install_shaders() {
     proj_mat_id = glGetUniformLocation(programId, "projMat");
     enable_texture = glGetUniformLocation(programId, "uEnableTexture");
     diffuse_color = glGetUniformLocation(programId, "uDiffuseColor");
-
-    return 1;
 }
