@@ -2,6 +2,36 @@
 
 #include "obj_loader.h"
 
+static int width = 11;
+static int height = 11;
+static int space = 2;
+static unsigned char levels[] = {
+    // level 1
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    1, 0, 0, 0, 2, 2, 2, 0, 0, 0, 1,
+    1, 0, 0, 0, 2, 3, 2, 0, 0, 0, 1,
+    1, 0, 0, 0, 2, 2, 2, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    // level 2
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 1,
+    1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 1,
+    1, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1,
+    1, 0, 0, 0, 2, 0, 2, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1,
+    1, 0, 0, 0, 2, 0, 2, 0, 0, 0, 1,
+    1, 0, 0, 2, 0, 0, 0, 2, 0, 0, 1,
+    1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 1,
+    1, 2, 0, 0, 0, 0, 0, 0, 0, 2, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+};
+
 Level *load_level(int num) {
     Level *level = malloc(sizeof(Level));
 
@@ -22,8 +52,8 @@ Level *load_level(int num) {
         char c = levels[i + offset];
         Model *model = level->models[c - 1];
         if (c) {
-            level->objects[i].x = (i % width) * 2;
-            level->objects[i].y = (height - i / width) * 2;
+            level->objects[i].x = (i % width) * space;
+            level->objects[i].y = (height - i / width) * space;
             level->objects[i].rotation = 0;
             level->objects[i].model = model;
         } else {
