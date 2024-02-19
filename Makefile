@@ -19,7 +19,7 @@ endif
 
 #link
 $(OUT): $(OBJS)
-	$(CC) $(LDFLAGS) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS)
 
 #compile
 %.o: $(SRCDIR)%.c
